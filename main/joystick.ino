@@ -1,0 +1,93 @@
+#include "joystick.h"
+#include "config.h"
+
+
+Joystick::Joystick(int pinSW, int pinX, int pinY) {
+  this->pinSW = pinSW;
+  this->pinX = pinX;
+  this->pinY = pinY;
+  pinMode(pinSW, INPUT_PULLUP);
+  pinMode(pinX, INPUT);
+  pinMode(pinY, INPUT);
+}
+
+void Joystick::readValues()
+{
+  xValue = analogRead(pinX);
+  yValue = analogRead(pinY);
+
+  // button debouncer
+  int reading = digitalRead(pinSW);
+  if (reading != lastButtonState) {
+    lastDebounceTime = millis();
+  }
+  if ((millis() - lastDebounceTime) > debounceDelay) {
+    if (reading != buttonState) {
+      buttonState = reading;
+    }
+  }
+  lastButtonState = reading;
+}
+
+void Joystick::menuMoveChecker()
+{
+  if (moved && abs(xValue - defaultValue) < moveThreshold && abs(yValue - defaultValue) < moveThreshold) {
+    moved = false;
+  }
+}
+
+bool Joystick::isPressed() 
+{
+  return !buttonState;
+}
+
+bool Joystick::menuMoveUp()
+{
+  if (!moved && yValue < defaultValue && (defaultValue - yValue) > moveThreshold) {
+    moved = true;
+    return true;
+  }
+  return false;
+}
+
+bool Joystick::menuMoveDown()
+{
+  if (!moved && yValue > defaultValue && (yValue - defaultValue) > moveThreshold) {
+    moved = true;
+    return true;
+  }
+  return false;
+}
+
+
+bool Joystick::moveLeft()
+{
+  if (xValue < defaultValue && (defaultValue - xValue) > moveThreshold) {
+    return true;
+  }
+  return false;
+}
+
+bool Joystick::moveRight()
+{
+  if (xValue > defaultValue && (xValue - defaultValue) > moveThreshold) {
+    return true;
+  }
+  return false;
+}
+
+bool Joystick::moveUp()
+{
+  if (yValue < defaultValue && (defaultValue - yValue) > moveThreshold) {
+    return true;
+  }
+  return false;
+}
+
+bool Joystick::moveDown()
+{
+  if (xValue > defaultValue && (yValue - defaultValue) > moveThreshold) {
+    return true;
+  }
+  return false;
+}
