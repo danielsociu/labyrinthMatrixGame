@@ -8,7 +8,7 @@ private:
 
   int xValue;
   int yValue;
-  bool buttonState;
+  bool buttonState = true;
   bool lastButtonState;
   unsigned long lastDebounceTime;  
   unsigned int debounceDelay = 50;

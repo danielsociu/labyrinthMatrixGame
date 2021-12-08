@@ -6,11 +6,11 @@ class GameEngine;
 class IntroState : public State
 {
 private:
-  const int introTimeout = 1000;
+  const int introTimeout = 5000;
   unsigned long startTime;
 
 public:
-  IntroState(GameEngine*);
+  IntroState();
   virtual void updateDisplay() override;
   virtual void updateState() override;
   virtual void onEntry() override;
@@ -27,8 +27,13 @@ private:
   const int selectedPosition = 2; // the position of the > selection
   char selectedCharacter = '>';
   const int padding = 4;  
+
+  char newGameText[16]    = "New Game";
+  char highscoresText[16] = "Highscores";
+  char settingsText[16]   = "Settings";
+  char aboutText[16]      = "About";
   
-  char displayMap[][16];
+  char **displayMap;
   enum menuOptions {
     newGame,
 //    Continue,
@@ -39,7 +44,7 @@ private:
   };
 
 public:
-  MenuState(GameEngine*);
+  MenuState();
   virtual void updateDisplay() override;
   virtual void updateState() override;
   virtual void onEntry() override;
@@ -72,7 +77,7 @@ private:
   char firstLine[50] = "DOOMed in Led's labyrinth by Sociu Daniel";
   char secondLine[50] = "Github: https://tinyurl.com/5n97tass";
 public:
-  AboutState(GameEngine*);
+  AboutState();
   virtual void updateDisplay() override;
   virtual void updateState() override;
   virtual void onEntry() override;

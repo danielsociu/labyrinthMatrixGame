@@ -4,7 +4,7 @@ class GameEngine;
 
 class State {
   public:
-    GameEngine* game;
+//    GameEngine* game;
     // GameState();
     // ~GameState();
     virtual void updateDisplay() = 0;

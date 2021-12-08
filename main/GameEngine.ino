@@ -2,9 +2,9 @@
 
 GameEngine::GameEngine() 
 {
-  introState = new IntroState(this);
-  menuState = new MenuState(this);
-  aboutState = new AboutState(this);
+  introState = new IntroState();
+  menuState = new MenuState();
+  aboutState = new AboutState();
 }
 
 void GameEngine::changeState(GameStateList newState)

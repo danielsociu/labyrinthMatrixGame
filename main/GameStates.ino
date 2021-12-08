@@ -6,9 +6,8 @@
 
 // Intro State *****************************************
 
-IntroState::IntroState(GameEngine* game) 
+IntroState::IntroState() 
 {
-  this->game = game;
 }
 
 void IntroState::onEntry() 
@@ -28,7 +27,7 @@ void IntroState::updateDisplay()
 
 void IntroState::updateState() {
   if (debouncer(startTime, introTimeout) || joystick.isPressed()) {
-    game->changeState(GameStateList::MenuState);
+    game.changeState(GameStateList::MenuState);
   }
 }
 
@@ -39,15 +38,15 @@ void IntroState::onExit()
 
 // Menu State *******************************************
 
-MenuState::MenuState(GameEngine* game) 
+MenuState::MenuState() 
 {
   //assert(this->selectedCharacter < this->padding); this breaks the execution???
-  this->game = game;
   this->optionsCount = menuOptions::optionsCounter;
-  strcpy(displayMap[menuOptions::newGame]       , "New Game");
-  strcpy(displayMap[menuOptions::highscores]    , "Highscores");
-  strcpy(displayMap[menuOptions::settings]      , "Settings");
-  strcpy(displayMap[menuOptions::about]         , "About");
+  displayMap = new char*[this->optionsCount];
+  displayMap[menuOptions::newGame]    = newGameText;
+  displayMap[menuOptions::highscores] = highscoresText;
+  displayMap[menuOptions::settings]   = settingsText;
+  displayMap[menuOptions::about]      = aboutText;
 }
 
 void MenuState::onEntry()
@@ -66,9 +65,9 @@ void MenuState::updateDisplay()
   lcd.print(selectedCharacter);
   
   lcd.setCursor(padding, 0);
-  lcd.print(displayMap[line]);
+  lcd.print(*(displayMap + line));
   lcd.setCursor(padding, 1);
-  lcd.print(displayMap[line + 1]);
+  lcd.print(*(displayMap + (line + 1)));
 }
 
 void MenuState::updateState() 
@@ -83,7 +82,7 @@ void MenuState::updateState()
       case menuOptions::settings:
         break;
       case menuOptions::about:
-        game->changeState(GameStateList::AboutState);
+        game.changeState(GameStateList::AboutState);
         break;
       default:
         break;
@@ -116,9 +115,8 @@ void MenuState::onExit()
 
 // About State *********************************************
 
-AboutState::AboutState(GameEngine* game) 
+AboutState::AboutState() 
 {
-  this->game = game;
 }
 
 void AboutState::onEntry() 
@@ -129,9 +127,9 @@ void AboutState::onEntry()
 
 void AboutState::updateDisplay() 
 {
-  lcd.setCursor(0,0);
+  lcd.setCursor(0, 0);
   lcd.print(firstLine);
-  lcd.setCursor(1,0);
+  lcd.setCursor(0, 1);
   lcd.print(secondLine); 
 }
 
