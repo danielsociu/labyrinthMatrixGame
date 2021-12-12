@@ -1,8 +1,7 @@
 #pragma once
 #include <Wire.h>
 #include <LiquidCrystal.h>
-#include "joystick.h"
-#include "assert.h"
+#include "Joystick.h"
 #include "GameEngine.h"
 
 extern LiquidCrystal lcd;

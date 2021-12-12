@@ -1,10 +1,10 @@
-#include "config.h"
+#include "Config.h"
 
 const int pinSW = 9;
 const int pinX = A0;
 const int pinY = A1;
 
-const int contrastSet = 6;
+const int contrastPin = 6;
 const int RS = 5;
 const int enable = 4;
 const int d4 = 3;
@@ -19,6 +19,6 @@ GameEngine game = GameEngine();
 
 void setupRun() 
 {
-  pinMode(contrastSet, OUTPUT);
+  pinMode(contrastPin, OUTPUT);
   lcd.begin(16, 2);
 }

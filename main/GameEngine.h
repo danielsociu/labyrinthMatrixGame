@@ -6,7 +6,9 @@ class GameEngine
 private:
   IntroState* introState;
   MenuState* menuState;
+  SettingsState* settingsState;
   AboutState* aboutState;
+  
 public:
   //constructor and deconstructor
   GameEngine();

@@ -1,4 +1,5 @@
-#include "config.h"
+#pragma once
+#include "Config.h"
 
 bool debouncer(unsigned long startTime, unsigned long duration)
 {

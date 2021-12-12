@@ -1,5 +1,5 @@
-#include "joystick.h"
-#include "config.h"
+#include "Joystick.h"
+#include "Config.h"
 
 
 Joystick::Joystick(int pinSW, int pinX, int pinY) {
@@ -29,7 +29,7 @@ void Joystick::readValues()
   lastButtonState = reading;
 }
 
-void Joystick::menuMoveChecker()
+void Joystick::onceMovedChecker()
 {
   if (moved && abs(xValue - defaultValue) < moveThreshold && abs(yValue - defaultValue) < moveThreshold) {
     moved = false;
@@ -41,7 +41,7 @@ bool Joystick::isPressed()
   return !buttonState;
 }
 
-bool Joystick::menuMoveUp()
+bool Joystick::onceMoveUp()
 {
   if (!moved && yValue < defaultValue && (defaultValue - yValue) > moveThreshold) {
     moved = true;
@@ -50,7 +50,7 @@ bool Joystick::menuMoveUp()
   return false;
 }
 
-bool Joystick::menuMoveDown()
+bool Joystick::onceMoveDown()
 {
   if (!moved && yValue > defaultValue && (yValue - defaultValue) > moveThreshold) {
     moved = true;

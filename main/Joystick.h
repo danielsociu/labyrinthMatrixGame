@@ -20,9 +20,9 @@ public:
   Joystick(int, int, int);
   void readValues();
   bool isPressed();
-  void menuMoveChecker();
-  bool menuMoveUp();
-  bool menuMoveDown();
+  void onceMovedChecker();
+  bool onceMoveUp();
+  bool onceMoveDown();
   bool moveLeft();
   bool moveRight();
   bool moveUp();

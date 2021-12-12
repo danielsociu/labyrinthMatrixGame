@@ -4,6 +4,7 @@ GameEngine::GameEngine()
 {
   introState = new IntroState();
   menuState = new MenuState();
+  settingsState = new SettingsState();
   aboutState = new AboutState();
 }
 
@@ -13,7 +14,6 @@ void GameEngine::changeState(GameStateList newState)
     currentState->onExit();
   }
   
-
   switch (newState)
   {
     case GameStateList::IntroState:
@@ -22,8 +22,14 @@ void GameEngine::changeState(GameStateList newState)
     case GameStateList::MenuState:
       currentState = menuState;
       break;
+   case GameStateList::SettingsState:
+      currentState = settingsState;
+      break;
     case GameStateList::AboutState:
       currentState = aboutState;
+      break;
+    case GameStateList::SettingsNameState:
+      currentState = settingsState->getSettingsNameState();
       break;
     default:
       break;
