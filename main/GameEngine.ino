@@ -6,6 +6,7 @@ GameEngine::GameEngine()
   menuState = new MenuState();
   settingsState = new SettingsState();
   aboutState = new AboutState();
+  highscoresState = new HighscoresState();
 }
 
 void GameEngine::changeState(GameStateList newState)
@@ -22,6 +23,9 @@ void GameEngine::changeState(GameStateList newState)
     case GameStateList::MenuState:
       currentState = menuState;
       break;
+   case GameStateList::HighscoresState:
+      currentState = highscoresState;
+      break;
    case GameStateList::SettingsState:
       currentState = settingsState;
       break;
@@ -30,6 +34,18 @@ void GameEngine::changeState(GameStateList newState)
       break;
     case GameStateList::SettingsNameState:
       currentState = settingsState->getSettingsNameState();
+      break;
+    case GameStateList::SettingsDifficultyState:
+      currentState = settingsState->getSettingsDifficultyState();
+      break;
+    case GameStateList::SettingsContrastState:
+      currentState = settingsState->getSettingsContrastState();
+      break;
+    case GameStateList::SettingsLedBrightnessState:
+      currentState = settingsState->getSettingsLedBrightnessState();
+      break;
+    case GameStateList::SettingsMatrixBrightnessState:
+      currentState = settingsState->getSettingsMatrixBrightnessState();
       break;
     default:
       break;

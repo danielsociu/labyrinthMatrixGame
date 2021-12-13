@@ -21,6 +21,8 @@ public:
   void readValues();
   bool isPressed();
   void onceMovedChecker();
+  bool onceMoveLeft();
+  bool onceMoveRight();
   bool onceMoveUp();
   bool onceMoveDown();
   bool moveLeft();

@@ -8,6 +8,7 @@ private:
   MenuState* menuState;
   SettingsState* settingsState;
   AboutState* aboutState;
+  HighscoresState* highscoresState;
   
 public:
   //constructor and deconstructor

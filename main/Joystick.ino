@@ -41,6 +41,24 @@ bool Joystick::isPressed()
   return !buttonState;
 }
 
+bool Joystick::onceMoveLeft()
+{
+  if (!moved && xValue < defaultValue && (defaultValue - xValue) > moveThreshold) {
+    moved = true;
+    return true;
+  }
+  return false;
+}
+
+bool Joystick::onceMoveRight()
+{
+  if (!moved && xValue > defaultValue && (xValue - defaultValue) > moveThreshold) {
+    moved = true;
+    return true;
+  }
+  return false;
+}
+
 bool Joystick::onceMoveUp()
 {
   if (!moved && yValue < defaultValue && (defaultValue - yValue) > moveThreshold) {
@@ -49,6 +67,7 @@ bool Joystick::onceMoveUp()
   }
   return false;
 }
+
 
 bool Joystick::onceMoveDown()
 {

@@ -82,6 +82,7 @@ void MenuState::updateState()
       case menuOptions::newGame:
         break;
       case menuOptions::highscores:
+        game.changeState(GameStateList::HighscoresState);
         break;
       case menuOptions::settings:
         game.changeState(GameStateList::SettingsState);
@@ -109,8 +110,6 @@ void MenuState::updateState()
   if (oldSelectedLine != selectedLine) {
     this->updateDisplay();
   }
-
-  
 }
 
 void MenuState::onExit()
@@ -118,10 +117,93 @@ void MenuState::onExit()
   lcd.clear();
 }
 
+// Highscores State ****************************************
+
+HighscoresState::HighscoresState() 
+{
+  this->numberOfSegments = highscoresEncoding::numberOfScores;
+  highscoresNames = new char*[this->numberOfSegments];
+  highscoresScores = new int[this->numberOfSegments];
+  for(int i = 0; i < this->numberOfSegments; i++) {
+    readEEPROM(i, highscoresNames[i], &highscoresScores[i]);
+  } 
+}
+
+void HighscoresState::onEntry() 
+{
+  lcd.clear();
+  this->line = 0;
+  startTime = millis();
+  this->updateDisplay();
+}
+
+void HighscoresState::updateDisplay() 
+{
+  lcd.clear();
+  for (int i = line; i <= line + 1; ++i) {
+    lcd.setCursor(padding, i - line);
+    lcd.print(i + 1);
+    lcd.print('.');
+    lcd.print(*(highscoresNames + i));
+    lcd.setCursor(padding + firstSegmentSize + 2, i - line);
+    lcd.print(":");
+    lcd.print(highscoresScores[i]);
+  }
+}
+
+void HighscoresState::updateState() {
+  int oldLine = line;
+  if (debouncer(startTime, finishDelay) && joystick.isPressed()) {
+    game.changeState(GameStateList::MenuState); 
+  }
+  joystick.onceMovedChecker();
+  if (joystick.onceMoveUp() && line > 0) {
+    line--;
+  }
+  if (joystick.onceMoveDown() && line < (numberOfSegments - 2)) {
+    line++;
+  }
+  if (oldLine != line) {
+    this->updateDisplay();
+  }
+}
+
+void HighscoresState::onExit()
+{
+  lcd.clear();
+}
+
+void HighscoresState::readEEPROM(int position, char* name, int* score) {
+  int i, offset, currentScore = 0;
+  for (i = position; i < position + firstSegmentSize; i++) {
+    byte value = EEPROM.read(i);
+    if (value == 0) {
+      break;
+    }
+    *(name + i - position) = (char)value;
+  }
+  *(name + i - position) = '\0';
+  for (i = position + firstSegmentSize, offset = 0; i < position + firstSegmentSize + secondSegmentSize; ++i, offset += 8) {
+    byte value = EEPROM.read(i);
+    if (value == 0) {
+      break;
+    }
+    currentScore += (value << offset);
+  }
+  *score = currentScore;
+}
+void writeEEPROM(int position, char* name, int score);
+
 // Settings State ****************************************
 
 SettingsState::SettingsState()
 {
+  // Setting defaults
+  this->difficulty = 0;
+  this->contrastLevel = 10;
+  this->ledBrightnessLevel = 128;
+  this->matrixBrightnessLevel = 128;
+  
   this->line = 0;
   this->selectedLine = 0;
   this->optionsCount = settingsOptions::optionsCounter;
@@ -135,6 +217,10 @@ SettingsState::SettingsState()
 
   // menu setters
   this->settingsNameState = new SettingsNameState(this);
+  this->settingsDifficultyState = new SettingsDifficultyState(this);
+  this->settingsContrastState =  new SettingsContrastState(this);
+  this->settingsLedBrightnessState =  new SettingsLedBrightnessState(this);
+  this->settingsMatrixBrightnessState = new SettingsMatrixBrightnessState(this);
 }
 
 void SettingsState::onEntry() 
@@ -143,8 +229,6 @@ void SettingsState::onEntry()
   lcd.clear();
   this->updateDisplay();
 }
-
-
 
 void SettingsState::updateDisplay() 
 {
@@ -186,12 +270,16 @@ void SettingsState::updateState() {
         game.changeState(GameStateList::SettingsNameState);
         break;
       case settingsOptions::difficultyOption:
+        game.changeState(GameStateList::SettingsDifficultyState);
         break;
       case settingsOptions::contrastLevelOption:
+        game.changeState(GameStateList::SettingsContrastState);
         break;
       case settingsOptions::ledBrightnessLevelOption:
+        game.changeState(GameStateList::SettingsLedBrightnessState);
         break;
       case settingsOptions::matrixBrightnessLevelOption:
+        game.changeState(GameStateList::SettingsMatrixBrightnessState);
         break;
       case settingsOptions::backOption:
         this->line = 0;
@@ -257,7 +345,7 @@ void SettingsState::setLedBrightnessLevel(int ledBrightnessLevel)
   this->ledBrightnessLevel = ledBrightnessLevel;
 }
 
-void SettingsState::setMatrixBrightnessLevel()
+void SettingsState::setMatrixBrightnessLevel(int matrixBrightnessLevel)
 {
   this->matrixBrightnessLevel = matrixBrightnessLevel;
 }
@@ -267,10 +355,25 @@ SettingsNameState* SettingsState::getSettingsNameState() const
   return this->settingsNameState;
 }
 
+SettingsDifficultyState* SettingsState::getSettingsDifficultyState() const
+{
+  return this->settingsDifficultyState;
+}
 
+SettingsContrastState* SettingsState::getSettingsContrastState() const
+{
+  return this->settingsContrastState;
+}
 
+SettingsLedBrightnessState* SettingsState::getSettingsLedBrightnessState() const
+{
+  return this->settingsLedBrightnessState;
+}
 
-
+SettingsMatrixBrightnessState* SettingsState::getSettingsMatrixBrightnessState() const
+{
+  return this->settingsMatrixBrightnessState;
+}
 
 // About State *******************************************
 
@@ -293,6 +396,7 @@ void AboutState::onEntry()
 
 void AboutState::updateDisplay() 
 {
+  lcd.clear();
   lcd.setCursor(0, 0);
   char line[17];
   strncpy(line, firstLine + min(currentPrinted, firstLineLength - 1), min(firstLineLength - currentPrinted, 16));

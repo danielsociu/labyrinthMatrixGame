@@ -65,6 +65,38 @@ public:
 //  virtual void onExit() override; 
 //};
 
+class HighscoresState : public State
+{
+private:
+  int numberOfSegments;
+  const int segmentsSize = 12;
+  const int firstSegmentSize = 8;  // storing the username
+  const int secondSegmentSize = 4;  // storing the score
+  char **highscoresNames;
+  int *highscoresScores;
+
+  int line;
+  const int padding = 0;
+  unsigned long startTime;
+  const int finishDelay = 300;
+
+  enum highscoresEncoding {
+    firstScore,
+    secondScore,
+    thirdScore,
+    numberOfScores
+  };
+  
+public:
+  HighscoresState();
+  virtual void updateDisplay() override;
+  virtual void updateState() override;
+  virtual void onEntry() override;
+  virtual void onExit() override; 
+  void readEEPROM(int position, char* name, int* score);
+  void writeEEPROM(int position, char* name, int score);
+};
+
 class SettingsState : public State
 {
 private:
@@ -82,6 +114,10 @@ private:
 
   // menu setters
   SettingsNameState *settingsNameState;
+  SettingsDifficultyState *settingsDifficultyState;
+  SettingsContrastState *settingsContrastState;
+  SettingsLedBrightnessState * settingsLedBrightnessState;
+  SettingsMatrixBrightnessState * settingsMatrixBrightnessState;
 
 protected:
   char playerNameText[stringLength]             = "Name";
@@ -126,13 +162,14 @@ public:
   void setDifficulty(int difficulty);
   void setContrastLevel(int contrastLevel);
   void setLedBrightnessLevel(int ledBrightnessLevel);
-  void setMatrixBrightnessLevel();
+  void setMatrixBrightnessLevel(int matrixBrightnessLevel);
 
   // getters states
   SettingsNameState* getSettingsNameState() const;
-//  int getDifficulty();
-//  int getContrastLevel();
-//  int getLedBrightnessLevel();
+  SettingsDifficultyState* getSettingsDifficultyState() const;
+  SettingsContrastState* getSettingsContrastState() const;
+  SettingsLedBrightnessState* getSettingsLedBrightnessState() const;
+  SettingsMatrixBrightnessState* getSettingsMatrixBrightnessState() const;
 //  int getMatrixBrightnessLevel();
 };
 
@@ -166,7 +203,12 @@ enum class GameStateList
   IntroState,
   MenuState,
 //  GameState,
+  HighscoresState,
   SettingsState,
   AboutState,
   SettingsNameState,
+  SettingsDifficultyState,
+  SettingsContrastState,
+  SettingsLedBrightnessState,
+  SettingsMatrixBrightnessState
 };
