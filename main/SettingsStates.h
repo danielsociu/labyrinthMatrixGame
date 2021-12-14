@@ -61,7 +61,7 @@ private:
   const int screenLength = 16;
 
   const int maxProgressBar = 16;
-  const int maxContrastValue = 40;
+  const int maxContrastValue = 100;
 
   int currentContrastLevel;
   int progressBar;

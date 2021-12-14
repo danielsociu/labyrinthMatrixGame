@@ -3,14 +3,14 @@
 #include "SettingsStates.h"
 #include "Map.h"
 
-const int stringLength = 17; // 1 for the null, 16 characters
-
 
 class IntroState : public State
 {
 private:
-  const int introTimeout = 5000;
+  const short introTimeout = 5000;
   unsigned long startTime;
+  char *titleLine1;
+  char *titleLine2;
 
 public:
   IntroState();
@@ -33,10 +33,10 @@ private:
   unsigned long startTime;
   int pressDelay = 300;
 
-  char newGameText[stringLength]    = "New Game";
-  char highscoresText[stringLength] = "Highscores";
-  char settingsText[stringLength]   = "Settings";
-  char aboutText[stringLength]      = "About";
+  char* newGameText;
+  char* highscoresText;
+  char* settingsText;
+  char* aboutText;
   
   char **displayMap;
   enum menuOptions {
@@ -78,17 +78,17 @@ public:
 class HighscoresState : public State
 {
 private:
-  int numberOfSegments;
-  const int segmentsSize = 12;
-  const int firstSegmentSize = 8;  // storing the username
-  const int secondSegmentSize = 4;  // storing the score
+  byte numberOfSegments;
+  const byte segmentsSize = 12;
+  const byte firstSegmentSize = 8;  // storing the username
+  const byte secondSegmentSize = 4;  // storing the score
   char **highscoresNames;
   int *highscoresScores;
 
-  int line;
-  const int padding = 0;
+  byte line;
+  const byte padding = 0;
   unsigned long startTime;
-  const int finishDelay = 300;
+  const short finishDelay = 300;
 
   enum highscoresEncoding {
     firstScore,
@@ -99,26 +99,27 @@ private:
   
 public:
   HighscoresState();
+  ~HighscoresState();
   virtual void updateDisplay() override;
   virtual void updateState() override;
   virtual void onEntry() override;
   virtual void onExit() override; 
-  void readEEPROM(int position, char* name, int* score);
-  void writeEEPROM(int position, char* name, int score);
+  void readEEPROM(byte position, char* name, int* score);
+  void writeEEPROM(byte position, char* name, int score);
 };
 
 class SettingsState : public State
 {
 private:
-  int line;
-  int selectedLine;
+  byte line;
+  byte selectedLine;
 
   unsigned long startTime;
-  int pressDelay = 300;
+  short pressDelay = 300;
 
-  const int selectedPosition = 2; // the position of the > selection
+  const byte selectedPosition = 2; // the position of the > selection
   char selectedCharacter = '>';
-  const int padding = 4;
+  const byte padding = 4;
   
   char **displayMap;
 
@@ -130,19 +131,19 @@ private:
   SettingsMatrixBrightnessState * settingsMatrixBrightnessState;
 
 protected:
-  char playerNameText[stringLength]             = "Name";
-  char difficultyText[stringLength]             = "Difficulty";
-  char contrastLevelText[stringLength]          = "Contrast";
-  char ledBrightnessLevelText[stringLength]     = "Brightness";
-  char matrixBrightnessLevelText[stringLength]  = "Map Bright.";
-  char backText[stringLength]                   = "Back <<";
+  char* playerNameText;
+  char* difficultyText;
+  char* contrastLevelText;
+  char* ledBrightnessLevelText;
+  char* matrixBrightnessLevelText;
+  char* backText;
   
-  char playerName[stringLength];
-  int difficulty;
-  int contrastLevel;
-  int ledBrightnessLevel;
-  int matrixBrightnessLevel;
-  int optionsCount;
+  char* playerName;
+  short difficulty;
+  short contrastLevel;
+  short ledBrightnessLevel;
+  short matrixBrightnessLevel;
+  short optionsCount;
   
   enum settingsOptions {
     playerNameOption,
@@ -156,16 +157,17 @@ protected:
   
 public:
   SettingsState();
+  ~SettingsState();
   virtual void updateDisplay() override;
   virtual void updateState() override;
   virtual void onEntry() override;
   virtual void onExit() override; 
   // getters
   const char* getPlayerName() const;
-  int getDifficulty();
-  int getContrastLevel();
-  int getLedBrightnessLevel();
-  int getMatrixBrightnessLevel();
+  short getDifficulty();
+  short getContrastLevel();
+  short getLedBrightnessLevel();
+  short getMatrixBrightnessLevel();
 
   // setters
   void setPlayerName(char *playerName);
@@ -189,12 +191,11 @@ private:
   char *firstLine;
   char *secondLine;
 
-  int delayScroll = 400;
-  int skipDelay = 500;
+  short delayScroll = 400;
+  short skipDelay = 500;
   unsigned long startTime;
   unsigned long lastTimeScrolled;
 
-  const byte displayLength = 16;
   byte firstLineLength;
   byte secondLineLength;
   byte currentPrinted;

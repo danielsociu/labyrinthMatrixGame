@@ -16,15 +16,19 @@ void IntroState::onEntry()
 {
   lcd.clear();
   startTime = millis();
+  titleLine1 = (char*)malloc(sizeof(char) * stringLength);
+  titleLine2 = (char*)malloc(sizeof(char) * stringLength);
+  strcpy(titleLine1, "DOOMed in Led's");
+  strcpy(titleLine2, "Labyrinth");
   this->updateDisplay();
 }
 
 void IntroState::updateDisplay() 
 {
   lcd.setCursor(0, 0);
-  lcd.print("Labyrinth");
-  lcd.setCursor(4, 1);
-  lcd.print("Escaping");
+  lcd.print(titleLine1);
+  lcd.setCursor(3, 1);
+  lcd.print(titleLine2);
 }
 
 void IntroState::updateState() {
@@ -35,6 +39,8 @@ void IntroState::updateState() {
 
 void IntroState::onExit()
 {
+  free(titleLine1);
+  free(titleLine2);
   lcd.clear();
 }
 
@@ -46,16 +52,28 @@ MenuState::MenuState()
   this->line = 0;
   this->selectedLine = 0;
   this->optionsCount = menuOptions::optionsCounter;
-  displayMap = new char*[this->optionsCount];
-  displayMap[menuOptions::newGame]    = newGameText;
-  displayMap[menuOptions::highscores] = highscoresText;
-  displayMap[menuOptions::settings]   = settingsText;
-  displayMap[menuOptions::about]      = aboutText;
 }
 
 void MenuState::onEntry()
 {
   startTime = millis();
+
+  newGameText = (char*)malloc(sizeof(char) * stringLength);
+  highscoresText = (char*)malloc(sizeof(char) * stringLength);
+  settingsText = (char*)malloc(sizeof(char) * stringLength);
+  aboutText = (char*)malloc(sizeof(char) * stringLength);
+
+  strcpy(newGameText, "New Game");
+  strcpy(highscoresText, "Highscores");
+  strcpy(settingsText, "Settings");
+  strcpy(aboutText, "About");
+
+  displayMap = (char**)malloc(sizeof(char*) * this->optionsCount);
+  displayMap[menuOptions::newGame]    = newGameText;
+  displayMap[menuOptions::highscores] = highscoresText;
+  displayMap[menuOptions::settings]   = settingsText;
+  displayMap[menuOptions::about]      = aboutText;
+
   this->updateDisplay();
 }
 
@@ -116,6 +134,11 @@ void MenuState::updateState()
 
 void MenuState::onExit()
 {
+  free(newGameText);
+  free(highscoresText);
+  free(settingsText);
+  free(aboutText);
+  free(displayMap);
   lcd.clear();
 }
 
@@ -172,11 +195,17 @@ void GameState::onExit()
 HighscoresState::HighscoresState() 
 {
   this->numberOfSegments = highscoresEncoding::numberOfScores;
-  highscoresNames = new char*[this->numberOfSegments];
-  highscoresScores = new int[this->numberOfSegments];
+  highscoresNames = (char**)malloc(sizeof(char*) * this->numberOfSegments);
+  highscoresScores = (int*)malloc(sizeof(int) * this->numberOfSegments);
   for(int i = 0; i < this->numberOfSegments; i++) {
     readEEPROM(i, highscoresNames[i], &highscoresScores[i]);
   } 
+}
+
+HighscoresState::~HighscoresState()
+{
+  free(highscoresNames);
+  free(highscoresScores);
 }
 
 void HighscoresState::onEntry() 
@@ -222,7 +251,7 @@ void HighscoresState::onExit()
   lcd.clear();
 }
 
-void HighscoresState::readEEPROM(int position, char* name, int* score) {
+void HighscoresState::readEEPROM(byte position, char* name, int* score) {
   int i, offset, currentScore = 0;
   position *= segmentsSize;
   for (i = position; i < position + firstSegmentSize; i++) {
@@ -242,7 +271,7 @@ void HighscoresState::readEEPROM(int position, char* name, int* score) {
   }
   *score = currentScore;
 }
-void HighscoresState::writeEEPROM(int position, char* name, int score)
+void HighscoresState::writeEEPROM(byte position, char* name, int score)
 {
 
 }
@@ -252,22 +281,17 @@ void HighscoresState::writeEEPROM(int position, char* name, int score)
 SettingsState::SettingsState()
 {
   // Setting defaults
+  playerName = (char*)malloc(sizeof(char) * stringLength);
+  strcpy(playerName, "ANON");
   this->difficulty = 0;
-  this->contrastLevel = 10;
+  this->contrastLevel = defaultContrast;
   this->ledBrightnessLevel = 128;
   this->matrixBrightnessLevel = 128;
   
   this->line = 0;
   this->selectedLine = 0;
   this->optionsCount = settingsOptions::optionsCounter;
-  displayMap = new char*[this->optionsCount];
-  displayMap[settingsOptions::playerNameOption]             = playerNameText;
-  displayMap[settingsOptions::difficultyOption]             = difficultyText;
-  displayMap[settingsOptions::contrastLevelOption]          = contrastLevelText;
-  displayMap[settingsOptions::ledBrightnessLevelOption]     = ledBrightnessLevelText;
-  displayMap[settingsOptions::matrixBrightnessLevelOption]  = matrixBrightnessLevelText;
-  displayMap[settingsOptions::backOption]                   = backText;
-
+  
   // menu setters
   this->settingsNameState = new SettingsNameState(this);
   this->settingsDifficultyState = new SettingsDifficultyState(this);
@@ -276,10 +300,37 @@ SettingsState::SettingsState()
   this->settingsMatrixBrightnessState = new SettingsMatrixBrightnessState(this);
 }
 
+SettingsState::~SettingsState()
+{
+    free(playerName);
+}
+
 void SettingsState::onEntry() 
 {
-  startTime = millis();
   lcd.clear();
+  startTime = millis();
+  
+  playerNameText = (char*)malloc(sizeof(char) * stringLength);
+  difficultyText = (char*)malloc(sizeof(char) * stringLength);
+  contrastLevelText = (char*)malloc(sizeof(char) * stringLength);
+  ledBrightnessLevelText = (char*)malloc(sizeof(char) * stringLength);
+  matrixBrightnessLevelText = (char*)malloc(sizeof(char) * stringLength);
+  backText = (char*)malloc(sizeof(char) * stringLength);
+  strcpy(playerNameText, "Name");
+  strcpy(difficultyText, "Difficulty");
+  strcpy(contrastLevelText, "Contrast");
+  strcpy(ledBrightnessLevelText, "Brightness");
+  strcpy(matrixBrightnessLevelText, "Map Bright.");
+  strcpy(backText, "Back <<");
+
+  displayMap = (char**)malloc(sizeof(char*) * this->optionsCount);
+  displayMap[settingsOptions::playerNameOption]             = playerNameText;
+  displayMap[settingsOptions::difficultyOption]             = difficultyText;
+  displayMap[settingsOptions::contrastLevelOption]          = contrastLevelText;
+  displayMap[settingsOptions::ledBrightnessLevelOption]     = ledBrightnessLevelText;
+  displayMap[settingsOptions::matrixBrightnessLevelOption]  = matrixBrightnessLevelText;
+  displayMap[settingsOptions::backOption]                   = backText;
+
   this->updateDisplay();
 }
 
@@ -300,7 +351,7 @@ void SettingsState::updateDisplay()
 }
 
 void SettingsState::updateState() {
-  int oldSelectedLine = selectedLine;
+  byte oldSelectedLine = selectedLine;
   joystick.onceMovedChecker();
   if (joystick.onceMoveUp() && selectedLine > 0) {
     selectedLine--;
@@ -347,6 +398,13 @@ void SettingsState::updateState() {
 
 void SettingsState::onExit()
 {
+  free(playerNameText);
+  free(difficultyText);
+  free(contrastLevelText);
+  free(ledBrightnessLevelText);
+  free(matrixBrightnessLevelText);
+  free(backText);
+  free(displayMap);
   lcd.clear();
 }
 
@@ -357,22 +415,22 @@ const char* SettingsState::getPlayerName() const
   return this->playerName; 
 }
 
-int SettingsState::getDifficulty()
+short SettingsState::getDifficulty()
 {
   return this->difficulty;
 }
 
-int SettingsState::getContrastLevel()
+short SettingsState::getContrastLevel()
 {
   return this->contrastLevel;
 }
 
-int SettingsState::getLedBrightnessLevel()
+short SettingsState::getLedBrightnessLevel()
 {
   return this->ledBrightnessLevel;
 }
 
-int SettingsState::getMatrixBrightnessLevel()
+short SettingsState::getMatrixBrightnessLevel()
 {
   return this->matrixBrightnessLevel;
 }
@@ -438,9 +496,11 @@ AboutState::AboutState()
 
 void AboutState::onEntry() 
 {
+  lcd.clear();
   currentPrinted = 0;
   startTime = millis();
   lastTimeScrolled = millis();
+  
   firstLine = (char*)malloc(sizeof(char) * 64);
   secondLine = (char*)malloc(sizeof(char) * 64);
   strcpy(firstLine,  "               DOOMed in Led's labyrinth by Daniel Sociu ");
@@ -449,7 +509,7 @@ void AboutState::onEntry()
   firstLineLength = strlen(firstLine);
   secondLineLength = strlen(secondLine);
   maxLength = max(firstLineLength, secondLineLength);
-  lcd.clear();
+  
   this->updateDisplay();
 }
 
@@ -457,13 +517,13 @@ void AboutState::updateDisplay()
 {
   lcd.clear();
   lcd.setCursor(0, 0);
-  char* line = (char*)malloc(sizeof(char) * (displayLength + 1));
+  char* line = (char*)malloc(sizeof(char) * stringLength);
   strncpy(line, firstLine + min(currentPrinted, firstLineLength - 1), min(firstLineLength - currentPrinted, 16));
-  line[displayLength] = '\0';
+  line[stringLength] = '\0';
   lcd.print(line);
   lcd.setCursor(0, 1);
   strncpy(line, secondLine + min(currentPrinted, secondLineLength - 1), min(secondLineLength - currentPrinted, 16));
-  line[displayLength] = '\0';
+  line[stringLength] = '\0';
   lcd.print(line); 
   free(line);
 }
@@ -480,7 +540,6 @@ void AboutState::updateState() {
   if (debouncer(startTime, skipDelay) && joystick.isPressed()) {
     game.changeState(GameStateList::MenuState);
   }
-  
 }
 
 void AboutState::onExit()

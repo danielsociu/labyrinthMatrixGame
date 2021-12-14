@@ -11,6 +11,8 @@ extern LiquidCrystal lcd;
 extern Joystick joystick;
 extern GameEngine game;
 extern Matrix matrix;
+extern short stringLength;
+extern short defaultContrast;
 
 void setupRun();
 
