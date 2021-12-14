@@ -2,6 +2,7 @@
 #include "Config.h"
 #include "Utils.h"
 #include "GameEngine.h"
+#include "Map.h"
 //#include "SettingsStates.h"
 
 
@@ -80,6 +81,7 @@ void MenuState::updateState()
   if (debouncer(startTime, pressDelay) && joystick.isPressed()) {
     switch (selectedLine) {
       case menuOptions::newGame:
+        game.changeState(GameStateList::GameState);
         break;
       case menuOptions::highscores:
         game.changeState(GameStateList::HighscoresState);
@@ -117,6 +119,54 @@ void MenuState::onExit()
   lcd.clear();
 }
 
+// Game State **********************************************
+
+GameState::GameState()
+{
+  gameMapping = new Map();
+}
+
+void GameState::onEntry() 
+{
+  lcd.clear();
+  startTime = millis();
+  this->loadingState();
+  gameMapping->generateGameMap();
+  currentRoom = new RenderedRoom(gameMapping->getRoom(B0, B0));
+  currentRoom->renderRoom();
+  this->updateMatrix();
+}
+
+void GameState::updateMatrix() 
+{
+  matrix.updateMatrix(currentRoom);
+}
+
+void GameState::loadingState() 
+{
+  lcd.setCursor(3, 0);
+  lcd.print("Loading...");
+}
+
+void GameState::updateDisplay() 
+{
+  lcd.setCursor(0, 0);
+  lcd.print("Labyrinth");
+  lcd.setCursor(4, 1);
+  lcd.print("Escaping");
+}
+
+void GameState::updateState() {
+  
+}
+
+void GameState::onExit()
+{
+  // free map;
+  lcd.clear();
+}
+
+
 // Highscores State ****************************************
 
 HighscoresState::HighscoresState() 
@@ -143,9 +193,8 @@ void HighscoresState::updateDisplay()
   for (int i = line; i <= line + 1; ++i) {
     lcd.setCursor(padding, i - line);
     lcd.print(i + 1);
-    lcd.print('.');
     lcd.print(*(highscoresNames + i));
-    lcd.setCursor(padding + firstSegmentSize + 2, i - line);
+    lcd.setCursor(padding + firstSegmentSize + 1, i - line);
     lcd.print(":");
     lcd.print(highscoresScores[i]);
   }
@@ -175,6 +224,7 @@ void HighscoresState::onExit()
 
 void HighscoresState::readEEPROM(int position, char* name, int* score) {
   int i, offset, currentScore = 0;
+  position *= segmentsSize;
   for (i = position; i < position + firstSegmentSize; i++) {
     byte value = EEPROM.read(i);
     if (value == 0) {
@@ -192,7 +242,10 @@ void HighscoresState::readEEPROM(int position, char* name, int* score) {
   }
   *score = currentScore;
 }
-void writeEEPROM(int position, char* name, int score);
+void HighscoresState::writeEEPROM(int position, char* name, int score)
+{
+
+}
 
 // Settings State ****************************************
 
@@ -379,9 +432,7 @@ SettingsMatrixBrightnessState* SettingsState::getSettingsMatrixBrightnessState()
 
 AboutState::AboutState() 
 {
-  firstLineLength = strlen(firstLine);
-  secondLineLength = strlen(secondLine);
-  maxLength = max(firstLineLength, secondLineLength);
+  
 }
 
 
@@ -390,6 +441,14 @@ void AboutState::onEntry()
   currentPrinted = 0;
   startTime = millis();
   lastTimeScrolled = millis();
+  firstLine = (char*)malloc(sizeof(char) * 64);
+  secondLine = (char*)malloc(sizeof(char) * 64);
+  strcpy(firstLine,  "               DOOMed in Led's labyrinth by Daniel Sociu ");
+  strcpy(secondLine, "               Github: https://tinyurl.com/5n97tass      ");
+  
+  firstLineLength = strlen(firstLine);
+  secondLineLength = strlen(secondLine);
+  maxLength = max(firstLineLength, secondLineLength);
   lcd.clear();
   this->updateDisplay();
 }
@@ -398,14 +457,15 @@ void AboutState::updateDisplay()
 {
   lcd.clear();
   lcd.setCursor(0, 0);
-  char line[17];
+  char* line = (char*)malloc(sizeof(char) * (displayLength + 1));
   strncpy(line, firstLine + min(currentPrinted, firstLineLength - 1), min(firstLineLength - currentPrinted, 16));
-  line[16] = '\0';
+  line[displayLength] = '\0';
   lcd.print(line);
   lcd.setCursor(0, 1);
   strncpy(line, secondLine + min(currentPrinted, secondLineLength - 1), min(secondLineLength - currentPrinted, 16));
-  line[16] = '\0';
+  line[displayLength] = '\0';
   lcd.print(line); 
+  free(line);
 }
 
 void AboutState::updateState() {
@@ -425,5 +485,7 @@ void AboutState::updateState() {
 
 void AboutState::onExit()
 {
+  free(firstLine);
+  free(secondLine);
   lcd.clear();
 }

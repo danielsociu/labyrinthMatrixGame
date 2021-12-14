@@ -4,6 +4,10 @@ const int pinSW = 10;
 const int pinX = A0;
 const int pinY = A1;
 
+const int dinPin = 13;
+const int clockPin = 12;
+const int loadPin = 11;
+
 const int ledPin = 9;
 const int contrastPin = 6;
 const int RS = 5;
@@ -27,6 +31,7 @@ int programState = 0;
 LiquidCrystal lcd (RS, enable, d4, d5, d6, d7);
 Joystick joystick(pinSW, pinX, pinY);
 GameEngine game = GameEngine();
+Matrix matrix = Matrix(dinPin, clockPin, loadPin);
 
 void setupRun() 
 {
@@ -38,6 +43,7 @@ void setupRun()
 //    EEPROM.update(i, 0);
 //  }
   lcd.createChar(0, progressBarChar);
+  randomSeed(analogRead(13));
 }
 
 void writeContrast(int value) 

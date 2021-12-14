@@ -7,6 +7,7 @@ GameEngine::GameEngine()
   settingsState = new SettingsState();
   aboutState = new AboutState();
   highscoresState = new HighscoresState();
+  gameState = new GameState();
 }
 
 void GameEngine::changeState(GameStateList newState)
@@ -22,6 +23,9 @@ void GameEngine::changeState(GameStateList newState)
       break;
     case GameStateList::MenuState:
       currentState = menuState;
+      break;
+    case GameStateList::GameState:
+      currentState = gameState;
       break;
    case GameStateList::HighscoresState:
       currentState = highscoresState;
@@ -51,6 +55,11 @@ void GameEngine::changeState(GameStateList newState)
       break;
   }
   currentState->onEntry();
+}
+
+SettingsState* GameEngine::getSettingsState()
+{
+  return this->settingsState;
 }
 
 void GameEngine::gameLoop()

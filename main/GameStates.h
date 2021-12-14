@@ -1,8 +1,10 @@
 #pragma once
 #include "GameState.h"
 #include "SettingsStates.h"
+#include "Map.h"
 
 const int stringLength = 17; // 1 for the null, 16 characters
+
 
 class IntroState : public State
 {
@@ -55,15 +57,23 @@ public:
 };
 
 
-//class GameState : public State
-//{
-//public:
-//  GameState();
-//  virtual void updateDisplay() override;
-//  virtual void updateState() override;
-//  virtual void onEntry() override;
-//  virtual void onExit() override; 
-//};
+class GameState : public State
+{
+  unsigned long startTime;
+  SettingsState *settingsState;
+  int numberOfLines = 32;
+  Map *gameMapping;
+  RenderedRoom *currentRoom;
+
+  void loadingState();
+public:
+  GameState();
+  void updateMatrix();
+  virtual void updateDisplay() override;
+  virtual void updateState() override;
+  virtual void onEntry() override;
+  virtual void onExit() override; 
+};
 
 class HighscoresState : public State
 {
@@ -176,18 +186,19 @@ public:
 class AboutState: public State
 {
 private:
-  char firstLine[65]  = "               DOOMed in Led's labyrinth by Daniel Sociu ";
-  char secondLine[65] = "               Github: https://tinyurl.com/5n97tass      ";
+  char *firstLine;
+  char *secondLine;
 
   int delayScroll = 400;
   int skipDelay = 500;
   unsigned long startTime;
   unsigned long lastTimeScrolled;
-  
-  int firstLineLength;
-  int secondLineLength;
-  int currentPrinted;
-  int maxLength;
+
+  const byte displayLength = 16;
+  byte firstLineLength;
+  byte secondLineLength;
+  byte currentPrinted;
+  byte maxLength;
   
   
 public:
@@ -202,7 +213,7 @@ enum class GameStateList
 {
   IntroState,
   MenuState,
-//  GameState,
+  GameState,
   HighscoresState,
   SettingsState,
   AboutState,

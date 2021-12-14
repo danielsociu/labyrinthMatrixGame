@@ -5,6 +5,30 @@
 // TODO: Add in SettingsStates if(change) for SettingsMatrixBrightnessState (after adding matrix)
 // TODO: Add resetHighscores in settings
 
+//12345678
+//#### 
+//#**#
+//#**#
+//#*##
+//#*## ####
+//#**1 #**#
+//#**0 ****
+//#01# ####
+//char map  = B10111001
+//
+//updateDisplay
+//
+//updateState:
+//    if player moved:
+//        update player pos
+//    if player shot:
+//        playerBullet;
+//    if enemyShot && timerBulletTRavel
+//        update bullet distance
+//    if changed:
+//        udpateDisplay();
+
+
 void setup()
 {
   setupRun();
