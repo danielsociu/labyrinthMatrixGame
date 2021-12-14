@@ -180,7 +180,9 @@ void GameState::updateDisplay()
 }
 
 void GameState::updateState() {
-  
+  if (debouncer(startTime, 300) && joystick.isPressed()) {
+    game.changeState(GameStateList::MenuState); 
+  }
 }
 
 void GameState::onExit()
@@ -283,10 +285,10 @@ SettingsState::SettingsState()
   // Setting defaults
   playerName = (char*)malloc(sizeof(char) * stringLength);
   strcpy(playerName, "ANON");
-  this->difficulty = 0;
+  this->difficulty = defaultDifficulty;
   this->contrastLevel = defaultContrast;
-  this->ledBrightnessLevel = 128;
-  this->matrixBrightnessLevel = 128;
+  this->ledBrightnessLevel = defaultLedBrightness;
+  this->matrixBrightnessLevel = defaultMatrixBrightness;
   
   this->line = 0;
   this->selectedLine = 0;

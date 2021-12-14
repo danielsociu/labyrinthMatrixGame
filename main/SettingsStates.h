@@ -5,21 +5,22 @@ class SettingsState;
 class SettingsNameState : public State
 {
 private:
-  const int numberOfChars = 27;
-  char charMap[27] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '\0'};
   unsigned long startTime;
-  int titleLength;
-  int nameLength;
-  const int screenLength = 16;
-  const int padding = 3;
-  const int finishDelay = 300;
+  const byte screenLength = 16;
+  const byte padding = 3;
+  const short finishDelay = 300;
 
-  const int maxNameLength = 8;
-  int currentPosition;
+  const byte maxNameLength = 8;
+  byte currentPosition;
   
+  const byte numberOfChars = 27;
+  char *charMap;
+
+  const byte titleLength = 12;
+  byte nameLength;
+  char *title;
+  char *currentName;
   SettingsState *settingsState;
-  char title[12] = "Name: |ind:";
-  char* currentName;
   
 public:
   SettingsNameState(SettingsState*);
@@ -33,15 +34,15 @@ class SettingsDifficultyState : public State
 {
 private:
   unsigned long startTime;
-  const int finishDelay = 300;
+  const short finishDelay = 300;
   
-  char title[12] = "Difficulty:";
-  int titleLength;
-  const int screenLength = 16;
+  const byte titleLength = 12;
+  char *title;
+  const byte screenLength = 16;
   
   SettingsState *settingsState;
-  int currentDifficulty;
-  const int maxDifficulty = 5;
+  short currentDifficulty;
+  const short maxDifficulty = 5;
 public:
   SettingsDifficultyState(SettingsState*);
   virtual void updateDisplay() override;
@@ -54,17 +55,17 @@ class SettingsContrastState : public State
 {
 private:
   unsigned long startTime;
-  const int finishDelay = 300;
+  const short finishDelay = 300;
   
-  char title[10] = "Contrast:";
-  int titleLength;
-  const int screenLength = 16;
+  const byte titleLength = 10;
+  char *title;
+  const byte screenLength = 16;
 
-  const int maxProgressBar = 16;
-  const int maxContrastValue = 100;
+  const byte maxProgressBar = 16;
+  const short maxContrastValue = 100;
 
-  int currentContrastLevel;
-  int progressBar;
+  short currentContrastLevel;
+  byte progressBar;
   
   SettingsState *settingsState;
 public:
@@ -79,17 +80,17 @@ class SettingsLedBrightnessState : public State
 {
 private:
   unsigned long startTime;
-  const int finishDelay = 300;
+  const short finishDelay = 300;
   
-  char title[12] = "Brightness:";
-  int titleLength;
-  const int screenLength = 16;
+  const byte titleLength = 12;
+  char *title;
+  const byte screenLength = 16;
 
-  const int maxProgressBar = 16;
-  const int maxLedBrightnessValue = 255;
+  const byte maxProgressBar = 16;
+  const short maxLedBrightnessValue = 255;
 
-  int currentLedBrightnessLevel;
-  int progressBar;
+  short currentLedBrightnessLevel;
+  byte progressBar;
 
   SettingsState *settingsState;
 public:
@@ -104,17 +105,17 @@ class SettingsMatrixBrightnessState : public State
 {
 private:
   unsigned long startTime;
-  const int finishDelay = 300;
+  const short finishDelay = 300;
   
-  char title[13] = "Map Bright.:";
-  int titleLength;
-  const int screenLength = 16;
+  const byte titleLength = 13;
+  char *title;
+  const byte screenLength = 16;
 
-  const int maxProgressBar = 16;
-  const int maxMatrixBrightnessLevel = 255;
+  const byte maxProgressBar = 16;
+  const short maxMatrixBrightnessLevel = 15;
 
-  int currentMatrixBrightnessLevel;
-  int progressBar;
+  short currentMatrixBrightnessLevel;
+  byte progressBar;
 
   SettingsState *settingsState;
 public:

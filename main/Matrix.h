@@ -15,4 +15,5 @@ private:
 public:
   Matrix(int, int, int);
   void updateMatrix(RenderedRoom* renderedRoom);
+  void writeMatrixBrightness(short value);
 };

@@ -32,7 +32,10 @@ Joystick joystick(pinSW, pinX, pinY);
 GameEngine game = GameEngine();
 Matrix matrix = Matrix(dinPin, clockPin, loadPin);
 short stringLength = 16;
+short defaultDifficulty = 1;
 short defaultContrast = 30;
+short defaultLedBrightness = 128;
+short defaultMatrixBrightness = 3;
 
 void setupRun() 
 {

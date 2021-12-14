@@ -1,29 +1,33 @@
 #include "Map.h"
 
-Room::Room(byte x, byte y) 
+Room::Room() 
 {
-  this->x = x;
-  this->y = y;
+  
+}
+
+byte Room::getRoad(int movement)
+{
+  return (road >> (movement * 2)) & B11;
 }
 
 byte Room::upRoad()
 {
-  return this->road[directions::up];
+  return getRoad(up);
 }
 
 byte Room::rightRoad()
 {
-  return this->road[directions::right];
+  return getRoad(right);
 }
 
 byte Room::downRoad()
 {
-  return this->road[directions::down];
+  return getRoad(down);
 }
 
 byte Room::leftRoad()
 {
-  return this->road[directions::left];
+  return getRoad(left);
 }
 
 RenderedRoom::RenderedRoom(Room *room)
@@ -104,7 +108,7 @@ void Map::generateGameMap()
   for (byte i = 0; i < actualLength; i++) {
     gameMap[i] = (Room*)malloc(sizeof(Room) * actualLength); 
     for (byte j = 0; j < actualLength; j++) {
-      gameMap[i][j] = Room(i, j);
+      gameMap[i][j] = Room();
       
     }
   }

@@ -12,7 +12,10 @@ extern Joystick joystick;
 extern GameEngine game;
 extern Matrix matrix;
 extern short stringLength;
+extern short defaultDifficulty;
 extern short defaultContrast;
+extern short defaultLedBrightness;
+extern short defaultMatrixBrightness;
 
 void setupRun();
 

@@ -7,19 +7,25 @@
 SettingsNameState::SettingsNameState (SettingsState* settingsState)
 {
   this->settingsState = settingsState;
-  this->titleLength = strlen(title);
-  this->currentName = (char*)malloc(maxNameLength * sizeof(char));
 }
 
 void SettingsNameState::onEntry()
 {
+  startTime = millis();
+
+  title = (char*)malloc(sizeof(char) * titleLength);
+  charMap = (char*)malloc(sizeof(char) * numberOfChars);
+  strcpy(title, "Name: |ind:");
+  strcpy(charMap, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+
+  currentName = (char*)malloc(maxNameLength * sizeof(char));
   strcpy(this->currentName, settingsState->getPlayerName());
   if (*this->currentName == '\0') {
-    strcpy(this->currentName, "A");
+    strcpy(this->currentName, "ANON");
   }
   nameLength = strlen(currentName);
+
   currentPosition = 0;
-  startTime = millis();
   this->updateDisplay();
 }
 
@@ -36,7 +42,7 @@ void SettingsNameState::updateDisplay()
 void SettingsNameState::updateState()
 {
   bool change = false;
-  int currentChar;
+  byte currentChar;
 
   joystick.onceMovedChecker();
   if (joystick.onceMoveLeft()) {
@@ -93,8 +99,10 @@ void SettingsNameState::updateState()
 
 void SettingsNameState::onExit()
 {
-  lcd.clear();
+  free(charMap);
+  free(title);
   free(currentName);
+  lcd.clear();
 }
 
 // SettingsDifficulty State *******************************************
@@ -102,13 +110,16 @@ void SettingsNameState::onExit()
 SettingsDifficultyState::SettingsDifficultyState(SettingsState* settingsState) 
 {
   this->settingsState = settingsState;
-  this->titleLength = strlen(title);
 }
 
 void SettingsDifficultyState::onEntry() 
 {
-  startTime = millis();
   lcd.clear();
+  startTime = millis();
+
+  title = (char*)malloc(sizeof(char) * titleLength);
+  strcpy(title, "Difficulty:");
+
   currentDifficulty = settingsState->getDifficulty();
   this->updateDisplay();
 }
@@ -151,6 +162,7 @@ void SettingsDifficultyState::updateState()
 
 void SettingsDifficultyState::onExit()
 {
+  free(title);
   lcd.clear();
 }
 
@@ -160,16 +172,18 @@ void SettingsDifficultyState::onExit()
 SettingsContrastState::SettingsContrastState(SettingsState* settingsState) 
 {
   this->settingsState = settingsState;
-  this->titleLength = strlen(title);
-  
 }
 
 void SettingsContrastState::onEntry() 
 {
+  lcd.clear();
+  startTime = millis();
+
+  title = (char*)malloc(sizeof(char) * 10);
+  strcpy(title, "Contrast:");
+
   currentContrastLevel = settingsState->getContrastLevel();
   progressBar = map(currentContrastLevel, 0, maxContrastValue, 0, maxProgressBar);
-  startTime = millis();
-  lcd.clear();
   this->updateDisplay();
 }
 
@@ -210,6 +224,7 @@ void SettingsContrastState::updateState()
 
 void SettingsContrastState::onExit()
 {
+  free(title);
   lcd.clear();
 }
 
@@ -218,15 +233,17 @@ void SettingsContrastState::onExit()
 SettingsLedBrightnessState::SettingsLedBrightnessState(SettingsState* settingsState) 
 {
   this->settingsState = settingsState;
-  this->titleLength = strlen(title);
 }
 
 void SettingsLedBrightnessState::onEntry() 
 {
+  lcd.clear();
+  startTime = millis();
+  title = (char*)malloc(sizeof(char) * titleLength);
+  strcpy(title, "Brightness:");
+
   currentLedBrightnessLevel = settingsState->getLedBrightnessLevel();
   progressBar = map(currentLedBrightnessLevel, 0, maxLedBrightnessValue, 0, maxProgressBar);
-  startTime = millis();
-  lcd.clear();
   this->updateDisplay();
 }
 
@@ -267,6 +284,7 @@ void SettingsLedBrightnessState::updateState()
 
 void SettingsLedBrightnessState::onExit()
 {
+  free(title);
   lcd.clear();
 }
 
@@ -276,15 +294,18 @@ void SettingsLedBrightnessState::onExit()
 SettingsMatrixBrightnessState::SettingsMatrixBrightnessState(SettingsState* settingsState) 
 {
   this->settingsState = settingsState;
-  this->titleLength = strlen(title);
 }
 
 void SettingsMatrixBrightnessState::onEntry() 
 {
+  lcd.clear();
+  startTime = millis();
+
+  title = (char*)malloc(sizeof(char) * titleLength);
+  strcpy(title, "Map Bright.:");
+
   currentMatrixBrightnessLevel = settingsState->getMatrixBrightnessLevel();
   progressBar = map(currentMatrixBrightnessLevel, 0, maxMatrixBrightnessLevel, 0, maxProgressBar);
-  startTime = millis();
-  lcd.clear();
   this->updateDisplay();
 }
 
@@ -312,7 +333,7 @@ void SettingsMatrixBrightnessState::updateState() {
   }
   if (change) {
     currentMatrixBrightnessLevel = map(progressBar, 1, maxProgressBar, 0, maxMatrixBrightnessLevel);
-//    writeMatrixBrightness(currentMatrixBrightnessLevel);
+    matrix.writeMatrixBrightness(currentMatrixBrightnessLevel);
     this->updateDisplay();
   }
   
@@ -324,5 +345,6 @@ void SettingsMatrixBrightnessState::updateState() {
 
 void SettingsMatrixBrightnessState::onExit()
 {
+  free(title);
   lcd.clear();
 }

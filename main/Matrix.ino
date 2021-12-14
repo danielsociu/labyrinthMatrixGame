@@ -9,7 +9,7 @@ Matrix::Matrix(int dinPin, int clockPin, int loadPin)
   this->loadPin = loadPin;
   ledControl = new LedControl(dinPin, clockPin, loadPin, 1);
   ledControl->shutdown(0, false);
-  ledControl->setIntensity(0, 3);
+  ledControl->setIntensity(0, defaultMatrixBrightness);
   ledControl->clearDisplay(0);
 }
 
@@ -30,4 +30,8 @@ void Matrix::updateMatrix(RenderedRoom *renderedRoom)
     ledControl->setRow(0, row, renderedRoom->getLine(row));
 //    ledControl->setRow(0, row, mapping[row]);
   }
+}
+
+void Matrix::writeMatrixBrightness(short value) {
+  ledControl->setIntensity(0, value);
 }
