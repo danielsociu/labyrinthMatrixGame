@@ -6,14 +6,15 @@ class RenderedRoom;
 class Matrix
 {
 private:
-  const int matrixSize = 8;
-  int dinPin;
-  int clockPin;
-  int loadPin;
+  const byte matrixSize = 8;
+  byte dinPin;
+  byte clockPin;
+  byte loadPin;
   LedControl *ledControl;
 
 public:
-  Matrix(int, int, int);
+  Matrix(byte, byte, byte);
+  byte getMatrixSize();
   void updateMatrix(RenderedRoom* renderedRoom);
   void writeMatrixBrightness(short value);
 };

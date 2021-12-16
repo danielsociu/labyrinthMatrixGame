@@ -1,11 +1,11 @@
 #pragma once
-#define up 0
-#define right 1
-#define down 2
-#define left 3
-#define directionsCount 4
+#include "Utils.h"
+#include "Entities.h"
 
 class SettingsState;
+
+byte createRoad(byte road, byte movement, byte value);
+byte getRoad(byte road, byte movement);
 
 class Room
 {
@@ -19,6 +19,7 @@ private:
 //  byte road[4];
   byte road;
   bool hasEnemy;
+  bool hasExit;
 //  byte x;
 //  byte y;
 //  bool hasExit;
@@ -26,7 +27,17 @@ private:
   byte getRoad(int movement);
 public:
 //  Room(byte x, byte y);
+  Room(byte road, bool hasEnemy, bool hasExit);
+  Room(byte road, bool hasEnemy);
+  Room(byte road);
   Room();
+  bool getEnemy();
+  bool getExit();
+  
+  void setRoad(byte road);
+  void setEnemy(bool hasEnemy);
+  void setExit(bool hasExit);
+  
 //  void setPosition(byte x, byte y);
   byte upRoad();
   byte rightRoad();
@@ -48,19 +59,28 @@ public:
   RenderedRoom(Room *room);
   ~RenderedRoom();
   void renderRoom();
+  void drawPosition(byte x, byte y);
   byte getLine(byte position);
+  bool getPosition(byte x, byte y);
 };
 
-class Map
+class MapEngine
 {
 private:
   const byte mapLength = 3;
   byte actualLength;
-  Room **gameMap;
-  Room* generateRandomNeighbor(Room *room);
+  Room *currentRoom;
+  RenderedRoom *currentRenderedRoom;
+  void generateNewRandomRoom(byte direction, byte value);
   
 public:
-  Map();
-  Room* getRoom(byte x, byte y);
-  void generateGameMap();
+  MapEngine();
+  byte generateRandomRoad();
+  void drawEntity(Entity* entity);
+  bool checkPositionEmpty(Entity* entity);
+  void renderMap();
+  void setCurrentRoom(byte road, bool hasEnemy = 0, bool hasExit = 0);
+  void changeCurrentRoom(byte road, bool hasEnemy = 0, bool hasExit = 0);
+  RenderedRoom* getRender();
+//  void generateGameMap();
 };

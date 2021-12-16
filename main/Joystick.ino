@@ -105,7 +105,7 @@ bool Joystick::moveUp()
 
 bool Joystick::moveDown()
 {
-  if (xValue > defaultValue && (yValue - defaultValue) > moveThreshold) {
+  if (yValue > defaultValue && (yValue - defaultValue) > moveThreshold) {
     return true;
   }
   return false;

@@ -146,23 +146,27 @@ void MenuState::onExit()
 
 GameState::GameState()
 {
-  gameMapping = new Map();
+  
 }
 
 void GameState::onEntry() 
 {
   lcd.clear();
+  score = 0;
   startTime = millis();
   this->loadingState();
-  gameMapping->generateGameMap();
-  currentRoom = new RenderedRoom(gameMapping->getRoom(B0, B0));
-  currentRoom->renderRoom();
+
+  mapEngine = new MapEngine();
+  player = new Player(matrix.getMatrixSize() / 2 - 1, matrix.getMatrixSize() / 2 - 1);
+  mapEngine->drawEntity(player);
+  
   this->updateMatrix();
+  this->updateDisplay();
 }
 
 void GameState::updateMatrix() 
 {
-  matrix.updateMatrix(currentRoom);
+  matrix.updateMatrix(mapEngine->getRender());
 }
 
 void GameState::loadingState() 
@@ -173,24 +177,70 @@ void GameState::loadingState()
 
 void GameState::updateDisplay() 
 {
+  lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Labyrinth");
-  lcd.setCursor(4, 1);
-  lcd.print("Escaping");
+  lcd.print(game.getSettingsState()->getPlayerName());
+  lcd.setCursor(12, 0);
+  lcd.write(byte(1));
+  lcd.setCursor(13, 0);
+  lcd.print(player->getHealth());
+  lcd.setCursor(0, 1);
+  lcd.print("Score:");
+  lcd.setCursor(8, 1);
+  lcd.print(this->score);
 }
 
 void GameState::updateState() {
-  if (debouncer(startTime, 300) && joystick.isPressed()) {
-    game.changeState(GameStateList::MenuState); 
+  if (debouncer(player->getLastMoved(), Player::delayMovement)) {
+    bool moved = false;
+    byte initialX = player->getX();
+    byte initialY = player->getY();
+    if (joystick.moveUp()) {
+      player->decreaseX(); 
+      moved = true;
+    }
+    else if (joystick.moveRight()) {
+      player->decreaseY(); 
+      moved = true;
+    }
+    else if (joystick.moveDown()) {
+      player->increaseX(); 
+      moved = true;
+    }
+    else if (joystick.moveLeft()) {
+      player->increaseY();
+      
+      moved = true;
+    }
+    if (moved == true) {
+        if (!mapEngine->checkPositionEmpty(player)) {
+          player->setX(initialX);
+          player->setY(initialY);
+        } else {
+          player->setLastMoved(millis());
+          mapEngine->renderMap();
+          mapEngine->drawEntity(player);
+          this->updateMatrix();
+        }
+    }
   }
 }
 
 void GameState::onExit()
 {
   // free map;
+  delete mapEngine;
   lcd.clear();
 }
 
+void GameState::setScore(short score)
+{
+  this->score = score;
+}
+short GameState::getScore()
+{
+  return this->score;
+}
 
 // Highscores State ****************************************
 

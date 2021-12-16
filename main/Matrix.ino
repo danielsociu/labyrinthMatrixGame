@@ -2,7 +2,7 @@
 
 #include "Map.h"
 
-Matrix::Matrix(int dinPin, int clockPin, int loadPin)
+Matrix::Matrix(byte dinPin, byte clockPin, byte loadPin)
 {
   this->dinPin = dinPin;
   this->clockPin = clockPin;
@@ -30,6 +30,11 @@ void Matrix::updateMatrix(RenderedRoom *renderedRoom)
     ledControl->setRow(0, row, renderedRoom->getLine(row));
 //    ledControl->setRow(0, row, mapping[row]);
   }
+}
+
+byte Matrix::getMatrixSize()
+{
+  return this->matrixSize;
 }
 
 void Matrix::writeMatrixBrightness(short value) {

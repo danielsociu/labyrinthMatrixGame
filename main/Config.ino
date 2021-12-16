@@ -27,6 +27,17 @@ byte progressBarChar[8] = {
   B11111,
 };
 
+byte healthChar[8] = {
+  B00000,
+  B01010,
+  B11111,
+  B11111,
+  B01110,
+  B00100,
+  B00000
+};
+
+
 LiquidCrystal lcd (RS, enable, d4, d5, d6, d7);
 Joystick joystick(pinSW, pinX, pinY);
 GameEngine game = GameEngine();
@@ -47,6 +58,7 @@ void setupRun()
 //    EEPROM.update(i, 0);
 //  }
   lcd.createChar(0, progressBarChar);
+  lcd.createChar(1, healthChar);
   randomSeed(analogRead(13));
 }
 

@@ -2,6 +2,7 @@
 #include "GameState.h"
 #include "SettingsStates.h"
 #include "Map.h"
+#include "Entities.h"
 
 
 class IntroState : public State
@@ -59,15 +60,18 @@ public:
 
 class GameState : public State
 {
+  short score;
   unsigned long startTime;
   SettingsState *settingsState;
   int numberOfLines = 32;
-  Map *gameMapping;
-  RenderedRoom *currentRoom;
+  MapEngine *mapEngine;
+  Player* player;
 
   void loadingState();
 public:
   GameState();
+  void setScore(short score);
+  short getScore();
   void updateMatrix();
   virtual void updateDisplay() override;
   virtual void updateState() override;
