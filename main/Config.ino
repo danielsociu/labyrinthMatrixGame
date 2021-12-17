@@ -10,12 +10,12 @@ const byte loadPin = 11;
 
 const byte ledPin = 9;
 const byte contrastPin = 6;
-const byte RS = 5;
-const byte enable = 4;
-const byte d4 = 3;
-const byte d5 = 2;
-const byte d6 = 1;
-const byte d7 = 0;
+const byte RS = 7;
+const byte enable = 5;
+const byte d4 = 4;
+const byte d5 = 3;
+const byte d6 = 2;
+const byte d7 = 1;
 
 byte progressBarChar[8] = {
   B11111,

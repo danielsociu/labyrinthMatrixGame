@@ -190,37 +190,48 @@ void GameState::updateDisplay()
   lcd.print(this->score);
 }
 
-void GameState::updateState() {
+void GameState::updateState() 
+{
   if (debouncer(player->getLastMoved(), Player::delayMovement)) {
     bool moved = false;
+    bool crossedX = false;
+    bool crossedY = false;
+    byte direction;
     byte initialX = player->getX();
     byte initialY = player->getY();
     if (joystick.moveUp()) {
-      player->decreaseX(); 
+      crossedX = player->decreaseX(); 
+      direction = up;
       moved = true;
     }
     else if (joystick.moveRight()) {
-      player->decreaseY(); 
+      crossedY = player->increaseY(); 
+      direction = right;
       moved = true;
     }
     else if (joystick.moveDown()) {
-      player->increaseX(); 
+      crossedX = player->increaseX(); 
+      direction = down;
       moved = true;
     }
     else if (joystick.moveLeft()) {
-      player->increaseY();
-      
+      crossedY = player->decreaseY();
+      direction = left;
       moved = true;
     }
     if (moved == true) {
-        if (!mapEngine->checkPositionEmpty(player)) {
-          player->setX(initialX);
-          player->setY(initialY);
-        } else {
+        if (mapEngine->checkPositionEmpty(player) || (!mapEngine->checkPositionEmpty(player) && (crossedX || crossedY))) {
+          if (crossedX || crossedY) {
+            // Generate new room
+            mapEngine->generateNewRandomRoom(direction);
+          }
           player->setLastMoved(millis());
           mapEngine->renderMap();
           mapEngine->drawEntity(player);
           this->updateMatrix();
+        } else {
+          player->setX(initialX);
+          player->setY(initialY);
         }
     }
   }

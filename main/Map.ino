@@ -1,17 +1,5 @@
 #include "Map.h"
 
-byte createRoad(byte road, byte movement, byte value)
-{
-  byte current = value;
-  current <<= (movement * 2);
-  return road ^ current;
-}
-
-byte getRoad(byte road, byte movement) 
-{
-  return (road >> (movement * 2)) & B11;
-}
-
 Room::Room() 
 {
   road = B0;
@@ -38,6 +26,13 @@ Room::Room(byte road, bool hasEnemy, bool hasExit)
 byte Room::getRoad(int movement)
 {
   return (road >> (movement * 2)) & B11;
+}
+
+void Room::changeRoad(byte movement, byte value)
+{
+  byte current = value;
+  current = current << (movement * 2);
+  road = road | current;
 }
 
 bool Room::getEnemy()
@@ -85,10 +80,25 @@ byte Room::leftRoad()
   return getRoad(left);
 }
 
-RenderedRoom::RenderedRoom(Room *room)
+RenderedRoom::RenderedRoom(byte road, bool hasEnemy, bool hasExit) : Room(road, hasEnemy, hasExit)
 {
   this->renderedRoom = (byte*)(malloc(sizeof(byte) * renderedRoomLength));
-  this->room = room;
+}
+
+RenderedRoom::RenderedRoom(byte road, bool hasEnemy) : Room(road, hasEnemy)
+{
+  this->renderedRoom = (byte*)(malloc(sizeof(byte) * renderedRoomLength));
+}
+
+RenderedRoom::RenderedRoom(byte road) : Room(road)
+{
+  this->renderedRoom = (byte*)(malloc(sizeof(byte) * renderedRoomLength));
+}
+
+
+RenderedRoom::RenderedRoom()
+{
+  this->renderedRoom = (byte*)(malloc(sizeof(byte) * renderedRoomLength));
 }
 
 RenderedRoom::~RenderedRoom()
@@ -103,12 +113,8 @@ byte RenderedRoom::getLine(byte position)
 
 void RenderedRoom :: renderRoom() 
 {
-//  byte upRoad = room->upRoad();
-//  byte rightRoad = room->rightRoad();
-//  byte downRoad = room->downRoad();
-//  byte leftRoad = room->leftRoad();
-  byte upDown[2] = {room->upRoad(), room->downRoad()};
-  byte leftRight[2] = {room->leftRoad(), room->rightRoad()};
+  byte upDown[2] = {upRoad(), downRoad()};
+  byte leftRight[2] = {leftRoad(), rightRoad()};
   for (byte i = 0; i < 2; ++i) { // represents first row/last row
     if (upDown[i] == 1) {
       renderedRoom[i * 6]      = B11001111;
@@ -149,6 +155,7 @@ void RenderedRoom::drawPosition(byte x, byte y)
   renderedRoom[x] = renderedRoom[x] | (B1<<y);
 }
 
+
 RenderedRoom* MapEngine::getRender()
 {
   return this->currentRenderedRoom;
@@ -170,30 +177,28 @@ byte MapEngine::generateRandomRoad()
   return road;
 }
 
-void MapEngine::generateNewRandomRoom(byte direction, byte value) {
-  direction = direction ^ B11;
-  byte road = createRoad(0, direction, value);
+void MapEngine::generateNewRandomRoom(byte direction) {
+  byte value = currentRenderedRoom->getRoad(direction);
+  direction = direction ^ B10;
+  this->currentRenderedRoom->setRoad(0);
+  this->currentRenderedRoom->changeRoad(direction, value);
   for (int dir = 0; dir < directionsCount; ++dir) {
     if (direction != dir) {
       byte gate = random(3);
-      road = createRoad(road, dir, gate);
+      this->currentRenderedRoom->changeRoad(dir, gate);
     }
   }
-  changeCurrentRoom(road);
 }
 
 void MapEngine::setCurrentRoom(byte road, bool hasEnemy, bool hasExit)
 {
-  currentRoom = new Room(road, hasEnemy, hasExit);
-  currentRenderedRoom = new RenderedRoom(currentRoom);
+  currentRenderedRoom = new RenderedRoom(road, hasEnemy, hasExit);
   currentRenderedRoom->renderRoom();
 }
 
-void MapEngine::changeCurrentRoom(byte road, bool hasEnemy, bool hasExit)
+void MapEngine::changeCurrentRoad(byte road)
 {
-  currentRoom->setRoad(road);
-  currentRoom->setEnemy(hasEnemy);
-  currentRoom->setExit(hasExit);
+  currentRenderedRoom->setRoad(road);
   currentRenderedRoom->renderRoom();
 }
 
@@ -209,10 +214,16 @@ void MapEngine::drawEntity(Entity* entity)
   }
 }
 
+// byte MapEngine::getRoad(Entity* entity)
+// {
+//   return this->getRender()->getRoad(entity->getX(), entity->getY());
+// }
+
 void MapEngine::renderMap()
 {
   currentRenderedRoom->renderRoom();
 }
+
 
 /* void MapEngine::drawEnemy(byte x, byte y) */
 /* { */

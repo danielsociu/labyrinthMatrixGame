@@ -13,7 +13,7 @@ Entity::Entity()
 {
   this->x = 0;
   this->y = 0;
-  this->health = 9;
+  this->health = 100;
   alive = true;
   matrixSize = matrix.getMatrixSize();
 }
@@ -48,24 +48,61 @@ void Entity::setY(byte y)
   this->y = y;
 }
 
-void Entity::increaseX()
+bool Entity::increaseX()
 {
-  x = ((x + 1) < matrixSize) ? x + 1 : 0;
+  if ((x + 1) < matrixSize) 
+  {
+    x += 1;
+    return false;
+  } else 
+  {
+    x = 0;
+    return true;  
+  }
+//  x = ((x + 1) < matrixSize) ? x + 1 : 0;
 }
 
-void Entity::decreaseX() 
+bool Entity::decreaseX() 
 {
-  x = ((x - 1) < 0) ? matrixSize - 1 : x - 1;
+  if ((x - 1) < 0) 
+  {
+    x = matrixSize - 1;
+    return true;
+  } else 
+  {
+    x -= 1;
+    return false;  
+  }
+//  x = ((x - 1) < 0) ? matrixSize - 1 : x - 1;
 }
 
-void Entity::increaseY()
+bool Entity::increaseY()
 {
-  y = ((y + 1) < matrixSize) ? y + 1 : 0;
+  if ((y - 1) < 0) 
+  {
+    y = matrixSize - 1;
+    return true;
+  } else 
+  {
+    y -= 1;
+    return false;  
+  }
+//  y = ((y - 1) < 0) ? matrixSize - 1 : y - 1;
 }
 
-void Entity::decreaseY() 
+bool Entity::decreaseY() 
 {
-  y = ((y - 1) < 0) ? matrixSize - 1 : y - 1;
+  
+if ((y + 1) < matrixSize) 
+  {
+    y += 1;
+    return false;
+  } else 
+  {
+    y = 0;
+    return true;  
+  }
+//  y = ((y + 1) < matrixSize) ? y + 1 : 0;
 }
 
 void Entity::takeDamage(short damage)
@@ -109,4 +146,19 @@ unsigned long Player::getLastMoved()
 void Player::setLastMoved(unsigned long lastMoved)
 {
   this->lastMoved = lastMoved;
+}
+
+Enemy::Enemy(byte x, byte y, short health) : Entity(x, y, health)
+{
+
+}
+
+void Enemy::setLastAttacked(unsigned long lastAttacked)
+{
+  this->lastAttacked = lastAttacked;
+}
+
+unsigned long Enemy::getLastAttacked()
+{
+  return this->lastAttacked;
 }

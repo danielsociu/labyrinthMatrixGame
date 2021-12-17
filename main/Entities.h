@@ -22,10 +22,10 @@ public:
   byte getY();
   void setX(byte x);
   void setY(byte y);
-  void increaseX();
-  void decreaseX();
-  void increaseY();
-  void decreaseY();
+  bool increaseX();
+  bool decreaseX();
+  bool increaseY();
+  bool decreaseY();
   void takeDamage(short damage);
   short dealDamage();
 };
@@ -48,7 +48,7 @@ public:
     {-1, 0, 1},
   };
 private:
-  const short defaultHealth = 9;
+  const short defaultHealth = 100;
   byte direction;
   unsigned long lastMoved;
 public:
@@ -61,7 +61,11 @@ public:
   
 };
 
-//class Enemy: public Entity
-//{
-//  
-//};
+class Enemy: public Entity
+{
+  unsigned long lastAttacked;
+public:
+  Enemy(byte x, byte y, short health);
+  void setLastAttacked(unsigned long lastAttacked);
+  unsigned long getLastAttacked();
+};
