@@ -12,6 +12,7 @@ extern Joystick joystick;
 extern GameEngine game;
 extern Matrix matrix;
 extern short stringLength;
+extern short screenLength;
 extern short defaultDifficulty;
 extern short defaultContrast;
 extern short defaultLedBrightness;

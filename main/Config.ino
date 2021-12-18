@@ -37,6 +37,16 @@ byte healthChar[8] = {
   B00000
 };
 
+byte enemyChar[8] = {
+  B00000,
+  B01110,
+  B10101,
+  B11111,
+  B11111,
+  B11111,
+  B10101,
+};
+
 
 LiquidCrystal lcd (RS, enable, d4, d5, d6, d7);
 Joystick joystick(pinSW, pinX, pinY);
@@ -47,11 +57,12 @@ short defaultDifficulty = 1;
 short defaultContrast = 30;
 short defaultLedBrightness = 128;
 short defaultMatrixBrightness = 3;
+short screenLength = 16;
 
 void setupRun() 
 {
   pinMode(contrastPin, OUTPUT);
-  lcd.begin(16, 2);
+  lcd.begin(screenLength, 2);
   analogWrite(contrastPin, 30);
   analogWrite(ledPin, 128);
 //  for (int i = 0; i < EEPROM.length(); ++i) {
@@ -59,6 +70,7 @@ void setupRun()
 //  }
   lcd.createChar(0, progressBarChar);
   lcd.createChar(1, healthChar);
+  lcd.createChar(2, enemyChar);
   randomSeed(analogRead(13));
 }
 

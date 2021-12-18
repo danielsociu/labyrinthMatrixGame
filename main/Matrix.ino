@@ -15,21 +15,9 @@ Matrix::Matrix(byte dinPin, byte clockPin, byte loadPin)
 
 void Matrix::updateMatrix(RenderedRoom *renderedRoom)
 {
-//  byte mapping[8] = {
-//    B11111111,
-//    B11111111,
-//    B11000011,
-//    B11000011,
-//    B11000011,
-//    B11000011,
-//    B11111111,
-//    B11111111,
-//  };
-  
   for (byte row = 0; row < matrixSize; ++row) 
   {
     ledControl->setRow(0, row, renderedRoom->getLine(row));
-//    ledControl->setRow(0, row, mapping[row]);
   }
 }
 
@@ -39,6 +27,17 @@ void Matrix::lightMatrix()
   for (byte row = 0; row < matrixSize; ++row)
   {
     ledControl->setRow(0, row, line);
+  }
+}
+
+void Matrix::drawGameover()
+{
+  byte xPixelArt[8] = {
+    0xC3, 0xE7, 0x7E, 0x3C, 0x3C, 0x7E, 0xE7, 0xC3
+  };
+  for (byte row = 0; row < matrixSize; ++row) 
+  {
+    ledControl->setRow(0, row, xPixelArt[row]);
   }
 }
 

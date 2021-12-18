@@ -9,6 +9,7 @@ protected:
   short health;
   short damage;
   bool alive;
+  bool damaged;
   byte x;
   byte y;
   byte matrixSize;
@@ -16,6 +17,7 @@ protected:
 public:
   Entity(byte x, byte y, short health);
   Entity();
+  virtual ~Entity();
   short getHealth();
   void setHealth(short health);
   byte getX();
@@ -26,6 +28,9 @@ public:
   bool decreaseX();
   bool increaseY();
   bool decreaseY();
+  bool isDamaged();
+  void setDamaged(bool damaged);
+  bool isAlive();
   void takeDamage(short damage);
   virtual short dealDamage() = 0;
   virtual const short* getAttackX() = 0;
@@ -57,13 +62,17 @@ public:
 private:
   
   byte direction;
-  unsigned long lastMoved;
-  unsigned long lastAttack;
-  unsigned long attacking;
+  unsigned long *lastMoved;
+  unsigned long *lastAttack;
+  unsigned long *attacking;
+  short enemiesKilled;
+  short roomsVisited;
   bool playerAttacked;
 public:
+  void init();
   Player(byte x, byte y);
   Player(byte x, byte y, short health);
+  virtual ~Player();
   void setDirection(byte direction);
   byte getDirection();
   unsigned long getLastMoved();
@@ -74,6 +83,10 @@ public:
   unsigned long getAttacking();
   void setPlayerAttacked(bool playerAttacked);
   bool getPlayerAttacked();
+  void increaseRoomsVisited();
+  void increaseEnemiesKilled();
+  short getEnemiesKilled();
+  short getRoomsVisited();
   virtual short dealDamage() override;
   virtual const short* getAttackX() override;
   virtual const short* getAttackY() override;
@@ -101,10 +114,12 @@ public:
   static constexpr short attackMultiplier = 10;
   
 private:
-  unsigned long lastAttack;
+  unsigned long *lastAttack;
 public:
+  void init();
   Enemy();
   Enemy(byte x, byte y, short health);
+  virtual ~Enemy();
   void setLastAttack(unsigned long lastAttack);
   unsigned long getLastAttack();
   virtual short dealDamage() override;

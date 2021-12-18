@@ -6,6 +6,7 @@ Entity::Entity(byte x, byte y, short health)
   this->y = y;
   this->health = health;
   alive = true;
+  damaged = false;
   matrixSize = matrix.getMatrixSize();
 }
 
@@ -15,7 +16,13 @@ Entity::Entity()
   this->y = 0;
   this->health = 100;
   alive = true;
+  damaged = false;
   matrixSize = matrix.getMatrixSize();
+}
+
+Entity::~Entity()
+{
+  
 }
 
 short Entity::getHealth()
@@ -105,6 +112,21 @@ if ((y + 1) < matrixSize)
 //  y = ((y + 1) < matrixSize) ? y + 1 : 0;
 }
 
+bool Entity::isDamaged()
+{
+  return this->damaged;
+}
+
+void Entity::setDamaged(bool damaged)
+{
+  this->damaged = damaged;
+}
+
+bool Entity::isAlive()
+{
+  return this->alive;
+}
+
 void Entity::takeDamage(short damage)
 {
   this->health -= damage;
@@ -122,14 +144,32 @@ constexpr short Player::attackXVector[directionsCount][attackRange];
 
 constexpr short Player::attackYVector[directionsCount][attackRange];
 
+void Player::init()
+{
+  lastMoved = (unsigned long*)malloc(sizeof(unsigned long));
+  lastAttack = (unsigned long*)malloc(sizeof(unsigned long));
+  attacking = (unsigned long*)malloc(sizeof(unsigned long));
+  *lastMoved = millis();
+  *lastAttack = millis();
+  enemiesKilled = 0;
+  roomsVisited = 1;
+}
+
 Player::Player(byte x, byte y): Entity(x, y, defaultHealth) 
 {
-  lastMoved = millis();
+  init();
 }
 
 Player::Player(byte x, byte y, short health): Entity(x, y, health) 
 {
-  lastMoved = millis();
+  init();
+}
+
+Player::~Player()
+{
+  free(lastMoved);
+  free(lastAttack);
+  free(attacking);
 }
 
 void Player::setDirection(byte direction)
@@ -144,32 +184,32 @@ byte Player::getDirection()
 
 unsigned long Player::getLastMoved()
 {
-  return lastMoved;
+  return *lastMoved;
 }
 
 void Player::setLastMoved(unsigned long lastMoved)
 {
-  this->lastMoved = lastMoved;
+  *this->lastMoved = lastMoved;
 }
 
 void Player::setLastAttack(unsigned long lastAttack)
 {
-  this->lastAttack = lastAttack;
+  *this->lastAttack = lastAttack;
 }
 
 unsigned long Player::getLastAttack()
 {
-  return this->lastAttack;
+  return *this->lastAttack;
 }
 
 void Player::setAttacking(unsigned long attacking)
 {
-  this->attacking = attacking;
+  *this->attacking = attacking;
 }
 
 unsigned long Player::getAttacking()
 {
-  return this->attacking;
+  return *this->attacking;
 }
 
 void Player::setPlayerAttacked(bool playerAttacked)
@@ -180,6 +220,25 @@ void Player::setPlayerAttacked(bool playerAttacked)
 bool Player::getPlayerAttacked()
 {
   return this->playerAttacked;
+}
+
+void Player::increaseRoomsVisited()
+{
+  this->roomsVisited += 1;
+}
+
+void Player::increaseEnemiesKilled()
+{
+  this->enemiesKilled += 1;
+}
+
+short Player::getEnemiesKilled()
+{
+  return this->enemiesKilled;
+}
+short Player::getRoomsVisited()
+{
+  return this->roomsVisited;
 }
 
 short Player::dealDamage()
@@ -206,24 +265,36 @@ constexpr short Enemy::attackXVector[];
 
 constexpr short Enemy::attackYVector[];
 
+void Enemy::init()
+{
+  lastAttack = (unsigned long*)malloc(sizeof(unsigned long));
+  *lastAttack = millis();
+}
+
 Enemy::Enemy() : Entity (2 + random(3), 2 + random(3), Enemy::defaultHealth + (game.getSettingsState()->getDifficulty() * Enemy::healthMultiplier))
 {
+  init();
 }
 
 
 Enemy::Enemy(byte x, byte y, short health) : Entity(x, y, health)
 {
+  init();
+}
 
+Enemy::~Enemy()
+{
+  free(lastAttack);
 }
 
 void Enemy::setLastAttack(unsigned long lastAttack)
 {
-  this->lastAttack = lastAttack;
+  *this->lastAttack = lastAttack;
 }
 
 unsigned long Enemy::getLastAttack()
 {
-  return this->lastAttack;
+  return *this->lastAttack;
 }
 
 short Enemy::dealDamage()

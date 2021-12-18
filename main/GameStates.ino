@@ -153,7 +153,8 @@ void GameState::onEntry()
 {
   lcd.clear();
   score = 0;
-  damagedPlayer = false;
+  escaped = false;
+  gameFinished = 0;
   startTime = millis();
   this->loadingState();
 
@@ -176,122 +177,199 @@ void GameState::loadingState()
   lcd.print("Loading...");
 }
 
+void GameState::onGameFinished()
+{
+  gameFinished = true;
+  gameFinishedTime = millis();
+  this->calculateScore();
+}
+
+void GameState::calculateScore()
+{
+  short roomsScore = player->getRoomsVisited() * roomScoreReward;
+  short enemyScore = player->getEnemiesKilled() * (enemyKillReward + game.getSettingsState()->getDifficulty() * enemyKillRewardMultiplier);
+  short timeScore = 0;
+  if (gameFinished) {
+    if (escaped) {
+      timeScore = min((gameFinishedTime - startTime) / 1000, timeScoreLimit);
+    } else {
+      timeScore = min((gameFinishedTime - startTime) / 1000, timeScoreLimit) / 10;
+    }
+  }
+  this->score = roomsScore + enemyScore + timeScore;
+}
+
+void GameState::gameoverDisplay()
+{
+  lcd.clear();
+  lcd.setCursor(2, 0);
+  lcd.print("Game over!");
+  lcd.setCursor(2, 1);
+  lcd.print("Score: ");
+  lcd.print(this->score);
+}
+
+void GameState::gameoverMatrix()
+{
+  matrix.drawGameover();
+}
+
 void GameState::updateDisplay() 
 {
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print(game.getSettingsState()->getPlayerName());
-  lcd.setCursor(11, 0);
+  lcd.setCursor(screenLength - 4, 0);
   lcd.write(byte(1));
-  lcd.setCursor(12, 0);
+  lcd.setCursor(screenLength - 3, 0);
   lcd.print(player->getHealth());
   lcd.setCursor(0, 1);
   lcd.print("Score:");
-  lcd.setCursor(8, 1);
   lcd.print(this->score);
+  if (mapEngine->getRender()->getEnemy()) {
+    lcd.setCursor(screenLength - 5, 1);
+    lcd.write(byte(2));
+    lcd.setCursor(screenLength - 4, 1);
+    lcd.write(byte(1));
+    lcd.setCursor(screenLength - 3, 1);
+    lcd.print(enemy->getHealth());
+
+  }
 }
 
 void GameState::updateState() 
 {
-  if (debouncer(player->getLastMoved(), Player::delayMovement)) 
-  {
-    bool moved = false;
-    bool crossedX = false;
-    bool crossedY = false;
-    byte direction;
-    byte initialX = player->getX();
-    byte initialY = player->getY();
-    if (joystick.moveUp()) {
-      crossedX = player->decreaseX(); 
-      // direction = up;
-      player->setDirection(up);
-      moved = true;
-    }
-    else if (joystick.moveRight()) {
-      crossedY = player->increaseY(); 
-      // direction = right;
-      player->setDirection(right);
-      moved = true;
-    }
-    else if (joystick.moveDown()) {
-      crossedX = player->increaseX(); 
-      // direction = down;
-      player->setDirection(down);
-      moved = true;
-    }
-    else if (joystick.moveLeft()) {
-      crossedY = player->decreaseY();
-      // direction = left;
-      player->setDirection(left);
-      moved = true;
-    }
-    if (moved == true) {
-        if (mapEngine->checkPositionEmpty(player) || (!mapEngine->checkPositionEmpty(player) && (crossedX || crossedY))) {
-          if (crossedX || crossedY) {
-            // Generate new room
-            mapEngine->generateNewRandomRoom(player->getDirection());
-            if (mapEngine->getRender()->getEnemy()) {
-              delete enemy;
-              enemy = new Enemy();
-            }
-          }
-          player->setLastMoved(millis());
-          player->setPlayerAttacked(false);
-        } else {
-          player->setX(initialX);
-          player->setY(initialY);
-        }   
-    }
-  }
-  mapEngine->renderMap();
-  mapEngine->drawEntity(player);
-  if (mapEngine->getRender()->getEnemy())
-  {
-    mapEngine->drawEntity(enemy);
-    if (debouncer(enemy->getLastAttack(), Enemy::attackDelay - game.getSettingsState()->getDifficulty() * Enemy::attackDelayReducer)) 
+  if (!gameFinished) {
+    if (debouncer(player->getLastMoved(), Player::delayMovement)) 
     {
-      mapEngine->drawAttack(enemy);
-      if (!damagedPlayer && mapEngine->checkInRangeOfAttack(enemy, player))
+      bool moved = false;
+      bool crossedX = false;
+      bool crossedY = false;
+      byte direction;
+      byte initialX = player->getX();
+      byte initialY = player->getY();
+      if (joystick.moveUp()) {
+        crossedX = player->decreaseX(); 
+        // direction = up;
+        player->setDirection(up);
+        moved = true;
+      }
+      else if (joystick.moveRight()) {
+        crossedY = player->increaseY(); 
+        // direction = right;
+        player->setDirection(right);
+        moved = true;
+      }
+      else if (joystick.moveDown()) {
+        crossedX = player->increaseX(); 
+        // direction = down;
+        player->setDirection(down);
+        moved = true;
+      }
+      else if (joystick.moveLeft()) {
+        crossedY = player->decreaseY();
+        // direction = left;
+        player->setDirection(left);
+        moved = true;
+      }
+      if (moved == true) {
+          if (mapEngine->checkPositionEmpty(player) || (!mapEngine->checkPositionEmpty(player) && (crossedX || crossedY))) {
+            if (crossedX || crossedY) {
+              // Generate new room
+              mapEngine->generateNewRandomRoom(player->getDirection());
+              player->increaseRoomsVisited();
+              this->calculateScore();
+              if (mapEngine->getRender()->getEnemy()) {
+                delete enemy;
+                enemy = new Enemy();
+              }
+              this->updateDisplay();
+            }
+            player->setLastMoved(millis());
+
+  //          player->setPlayerAttacked(false);
+          } else {
+            player->setX(initialX);
+            player->setY(initialY);
+          }   
+      }
+    }
+    mapEngine->renderMap();
+    mapEngine->drawEntity(player);
+  
+    // Enemy attacking
+    if (mapEngine->getRender()->getEnemy())
+    {
+      mapEngine->drawEntity(enemy);
+      if (debouncer(enemy->getLastAttack(), Enemy::attackDelay - game.getSettingsState()->getDifficulty() * Enemy::attackDelayReducer)) 
       {
-        player->takeDamage(enemy->dealDamage());
-        damagedPlayer = true;
+        mapEngine->drawAttack(enemy);
+        if (!player->isDamaged() && mapEngine->checkInRangeOfAttack(enemy, player))
+        {
+          player->takeDamage(enemy->dealDamage());
+          player->setDamaged(true);
+          this->updateDisplay();
+          if (!player->isAlive()) {
+            this->onGameFinished();
+            gameoverDisplay();
+            gameoverMatrix();
+            return;
+          }
+        }
+        if (debouncer(enemy->getLastAttack(), Enemy::attackDelay - game.getSettingsState()->getDifficulty() * Enemy::attackDelayReducer + Enemy::attackDuration)) 
+        {
+          enemy->setLastAttack(millis());
+          player->setDamaged(false);
+        }
+      }
+    }
+  //   lcd.print(playerAttacked);
+  
+    // Player attacking
+    if (debouncer(player->getLastAttack(), Player::attackDelay) && joystick.isPressed() && !player->getPlayerAttacked())
+    {
+      player->setAttacking(millis());
+      player->setPlayerAttacked(true);
+    }
+    if (player->getPlayerAttacked())
+    {
+      mapEngine->drawAttack(player);
+      
+      if (!enemy->isDamaged() && mapEngine->getRender()->getEnemy() && mapEngine->checkInRangeOfAttack(player, enemy))
+      {
+        enemy->takeDamage(player->dealDamage());
+        enemy->setDamaged(true);
+        if (!enemy->isAlive()) {
+          mapEngine->getRender()->setEnemy(false);
+          player->increaseEnemiesKilled();
+          this->calculateScore();
+          delete enemy;
+        }
         this->updateDisplay();
       }
-      if (debouncer(enemy->getLastAttack(), Enemy::attackDelay - game.getSettingsState()->getDifficulty() * Enemy::attackDelayReducer + Enemy::attackDuration)) 
+     
+      if (debouncer(player->getAttacking(), Player::attackDuration)) 
       {
-        enemy->setLastAttack(millis());
-        damagedPlayer = false;
+        player->setPlayerAttacked(false);
+        enemy->setDamaged(false);
+        player->setLastAttack(millis());
       }
     }
-  }
-//   lcd.print(playerAttacked);
-  if (debouncer(player->getLastAttack(), Player::attackDelay) && joystick.isPressed() && !player->getPlayerAttacked())
-  {
-    player->setAttacking(millis());
-    player->setPlayerAttacked(true);
-  }
-  if (player->getPlayerAttacked())
-  {
-    mapEngine->drawAttack(player);
-    
-    if (mapEngine->checkInRangeOfAttack(player, enemy))
-    {
-      enemy->takeDamage(player->dealDamage());
-    }
-   
-    if (debouncer(player->getAttacking(), Player::attackDuration)) 
-    {
-      player->setPlayerAttacked(false);
-      player->setLastAttack(millis());
+    this->updateMatrix();
+  } else {
+    if (debouncer(gameFinishedTime, gameFinishedTimer) && joystick.isPressed()) {
+      game.changeState(GameStateList::MenuState);
     }
   }
-  this->updateMatrix();
+  
 }
 
 void GameState::onExit()
 {
   // free map;
   delete mapEngine;
+  delete player;
+  delete enemy;
   lcd.clear();
 }
 

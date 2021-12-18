@@ -60,14 +60,22 @@ public:
 
 class GameState : public State
 {
+public:
+  static constexpr short roomScoreReward = 5;
+  static constexpr short enemyKillReward = 10;
+  static constexpr short enemyKillRewardMultiplier = 10;
+  static constexpr short timeScoreLimit = 1000;
+private:
+  bool gameFinished;
   short score;
   unsigned long startTime;
-  SettingsState *settingsState;
   int numberOfLines = 32;
   MapEngine *mapEngine;
   Player* player;
   Enemy* enemy;
-  bool damagedPlayer;
+  bool escaped;
+  unsigned long gameFinishedTime;
+  const short gameFinishedTimer = 300;
 
   void loadingState();
 public:
@@ -75,6 +83,10 @@ public:
   void setScore(short score);
   short getScore();
   void updateMatrix();
+  void gameoverDisplay();
+  void gameoverMatrix();
+  void onGameFinished();
+  void calculateScore();
   virtual void updateDisplay() override;
   virtual void updateState() override;
   virtual void onEntry() override;
