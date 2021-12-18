@@ -65,6 +65,7 @@ public:
   void drawPosition(byte x, byte y);
   byte getLine(byte position);
   bool getPosition(byte x, byte y);
+  bool checkInside(byte x, byte y);
 };
 
 class MapEngine
@@ -83,6 +84,8 @@ public:
   void renderMap();
   void setCurrentRoom(byte road, bool hasEnemy = 0, bool hasExit = 0);
   void changeCurrentRoad(byte road);
+  void drawAttack(Entity* entity);
+  bool checkInRangeOfAttack(Entity* attacker, Entity* checked);
   // byte getRoad(Entity *entity);
   RenderedRoom* getRender();
 //  void generateGameMap();

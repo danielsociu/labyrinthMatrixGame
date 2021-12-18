@@ -15,20 +15,6 @@
 //#**1 #**#
 //#**0 ****
 //#01# ####
-//char map  = B10111001
-//
-//updateDisplay
-//
-//updateState:
-//    if player moved:
-//        update player pos
-//    if player shot:
-//        playerBullet;
-//    if enemyShot && timerBulletTRavel
-//        update bullet distance
-//    if changed:
-//        udpateDisplay();
-
 
 void setup()
 {

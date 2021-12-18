@@ -16,7 +16,7 @@ private:
   const byte numberOfChars = 27;
   char *charMap;
 
-  const byte titleLength = 12;
+  const byte titleLength = 6;
   byte nameLength;
   char *title;
   char *currentName;

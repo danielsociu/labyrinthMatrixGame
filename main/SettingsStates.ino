@@ -15,7 +15,7 @@ void SettingsNameState::onEntry()
 
   title = (char*)malloc(sizeof(char) * titleLength);
   charMap = (char*)malloc(sizeof(char) * numberOfChars);
-  strcpy(title, "Name: |ind:");
+  strcpy(title, "Name:");
   strcpy(charMap, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 
   currentName = (char*)malloc(maxNameLength * sizeof(char));
@@ -26,6 +26,8 @@ void SettingsNameState::onEntry()
   nameLength = strlen(currentName);
 
   currentPosition = 0;
+  lcd.setCursor(padding + currentPosition, 1);
+  lcd.blink();
   this->updateDisplay();
 }
 
@@ -34,7 +36,6 @@ void SettingsNameState::updateDisplay()
   lcd.clear();
   lcd.setCursor((screenLength - titleLength) / 2, 0);
   lcd.print(title);
-  lcd.print(currentPosition);
   lcd.setCursor(padding, 1);
   lcd.print(currentName);
 }
@@ -45,22 +46,28 @@ void SettingsNameState::updateState()
   byte currentChar;
 
   joystick.onceMovedChecker();
-  if (joystick.onceMoveLeft()) {
+  if (joystick.onceMoveLeft()) 
+  {
     currentPosition = (currentPosition > 0) ? currentPosition - 1 : nameLength - 1;
     change = true;
   }
-  if (joystick.onceMoveRight()) {
+  if (joystick.onceMoveRight()) 
+  {
     currentPosition = (currentPosition < nameLength - 1) ? currentPosition + 1 : nameLength;
-    if (currentPosition >= maxNameLength) {
+    if (currentPosition >= maxNameLength) 
+    {
       currentPosition--;
     }
     change = true;
   }
-  if (joystick.onceMoveUp()) {
+  if (joystick.onceMoveUp()) 
+  {
     currentChar = (int)currentName[currentPosition];
-    if (currentChar) {
+    if (currentChar) 
+    {
       currentChar -= (int)'A';
-    } else {
+    } else 
+    {
       currentChar = 26;
     }
     currentChar++;
@@ -69,28 +76,37 @@ void SettingsNameState::updateState()
   }
   if (joystick.onceMoveDown()) {
     currentChar = (int)currentName[currentPosition];
-    if (currentChar) {
+    if (currentChar) 
+    {
       currentChar -= (int)'A';
-    } else {
+    } else 
+    {
       currentChar = 26;
     }
     currentChar--;
     currentName[currentPosition] = charMap[currentChar % numberOfChars];
     change = true;
   }
-  if (change) {
-    if (currentPosition == nameLength && currentName[currentPosition] != '\0') {
+  if (change) 
+  {
+    if (currentPosition == nameLength && currentName[currentPosition] != '\0') 
+    {
       nameLength = currentPosition + 1;
       currentName[nameLength] = '\0';
     }
-    if (currentName[currentPosition] == '\0') {
+    if (currentName[currentPosition] == '\0') 
+    {
       nameLength = currentPosition;
     }
     this->updateDisplay();
+    lcd.setCursor(currentPosition + padding, 1);
+    lcd.blink();
   }
   
-  if (debouncer(startTime, finishDelay) && joystick.isPressed()) {
-    if (*currentName != '\0') {
+  if (debouncer(startTime, finishDelay) && joystick.isPressed()) 
+  {
+    if (*currentName != '\0') 
+    {
       this->settingsState->setPlayerName(currentName);
       game.changeState(GameStateList::SettingsState);
     }
@@ -102,6 +118,7 @@ void SettingsNameState::onExit()
   free(charMap);
   free(title);
   free(currentName);
+  lcd.noBlink();
   lcd.clear();
 }
 
@@ -135,26 +152,29 @@ void SettingsDifficultyState::updateDisplay()
   lcd.print(currentDifficulty + 1);
   lcd.setCursor(screenLength / 2 + 3, 1);
   lcd.print('+');
-  
 }
 
 void SettingsDifficultyState::updateState() 
 {
   bool change = false;
   joystick.onceMovedChecker();
-  if (joystick.onceMoveLeft()) {
+  if (joystick.onceMoveLeft()) 
+  {
     currentDifficulty = max(currentDifficulty - 1, 0);
     change = true;
   }
-  if (joystick.onceMoveRight()) {
+  if (joystick.onceMoveRight()) 
+  {
     currentDifficulty = min(currentDifficulty + 1, maxDifficulty - 1);
     change = true;
   }
-  if (change) {
+  if (change) 
+  {
     this->updateDisplay();
   }
   
-  if (debouncer(startTime, finishDelay) && joystick.isPressed()) {
+  if (debouncer(startTime, finishDelay) && joystick.isPressed()) 
+  {
     this->settingsState->setDifficulty(currentDifficulty);
     game.changeState(GameStateList::SettingsState);
   }
@@ -192,7 +212,8 @@ void SettingsContrastState::updateDisplay()
   lcd.clear();
   lcd.setCursor((screenLength - titleLength) / 2, 0);
   lcd.print(title);
-  for (int i = 0; i < progressBar; i++) {
+  for (int i = 0; i < progressBar; i++) 
+  {
     lcd.setCursor(i, 1);
     lcd.write(byte(0));
   }
@@ -202,21 +223,25 @@ void SettingsContrastState::updateState()
 {
   bool change = false;
   joystick.onceMovedChecker();
-  if (joystick.onceMoveLeft()) {
+  if (joystick.onceMoveLeft()) 
+  {
     progressBar = max(1, progressBar - 1);
     change = true;
   }
-  if (joystick.onceMoveRight()) {
+  if (joystick.onceMoveRight()) 
+  {
     progressBar = min(maxProgressBar, progressBar + 1);
     change = true;
   }
-  if (change) {
+  if (change) 
+  {
     currentContrastLevel = map(progressBar, 1, maxProgressBar, 0, maxContrastValue);
     writeContrast(currentContrastLevel);
     this->updateDisplay();
   }
   
-  if (debouncer(startTime, finishDelay) && joystick.isPressed()) {
+  if (debouncer(startTime, finishDelay) && joystick.isPressed()) 
+  {
     this->settingsState->setContrastLevel(currentContrastLevel);
     game.changeState(GameStateList::SettingsState);
   }
@@ -252,7 +277,8 @@ void SettingsLedBrightnessState::updateDisplay()
   lcd.clear();
   lcd.setCursor((screenLength - titleLength) / 2, 0);
   lcd.print(title);
-  for (int i = 0; i < progressBar; i++) {
+  for (int i = 0; i < progressBar; i++) 
+  {
     lcd.setCursor(i, 1);
     lcd.write(byte(0));
   }
@@ -262,7 +288,8 @@ void SettingsLedBrightnessState::updateState()
 {
   bool change = false;
   joystick.onceMovedChecker();
-  if (joystick.onceMoveLeft()) {
+  if (joystick.onceMoveLeft()) 
+  {
     progressBar = max(1, progressBar - 1);
     change = true;
   }
@@ -270,13 +297,15 @@ void SettingsLedBrightnessState::updateState()
     progressBar = min(maxProgressBar, progressBar + 1);
     change = true;
   }
-  if (change) {
+  if (change) 
+  {
     currentLedBrightnessLevel = map(progressBar, 1, maxProgressBar, 0, maxLedBrightnessValue);
     writeLedBrightness(currentLedBrightnessLevel);
     this->updateDisplay();
   }
   
-  if (debouncer(startTime, finishDelay) && joystick.isPressed()) {
+  if (debouncer(startTime, finishDelay) && joystick.isPressed()) 
+  {
     this->settingsState->setLedBrightnessLevel(currentLedBrightnessLevel);
     game.changeState(GameStateList::SettingsState);
   }
@@ -301,6 +330,7 @@ void SettingsMatrixBrightnessState::onEntry()
   lcd.clear();
   startTime = millis();
 
+  matrix.lightMatrix();
   title = (char*)malloc(sizeof(char) * titleLength);
   strcpy(title, "Map Bright.:");
 
@@ -314,30 +344,36 @@ void SettingsMatrixBrightnessState::updateDisplay()
   lcd.clear();
   lcd.setCursor((screenLength - titleLength) / 2, 0);
   lcd.print(title);
-  for (int i = 0; i < progressBar; i++) {
+  for (int i = 0; i < progressBar; i++) 
+  {
     lcd.setCursor(i, 1);
     lcd.write(byte(0));
   }
 }
 
-void SettingsMatrixBrightnessState::updateState() {
+void SettingsMatrixBrightnessState::updateState() 
+{
   bool change = false;
   joystick.onceMovedChecker();
-  if (joystick.onceMoveLeft()) {
+  if (joystick.onceMoveLeft()) 
+  {
     progressBar = max(1, progressBar - 1);
     change = true;
   }
-  if (joystick.onceMoveRight()) {
+  if (joystick.onceMoveRight()) 
+  {
     progressBar = min(maxProgressBar, progressBar + 1);
     change = true;
   }
-  if (change) {
+  if (change) 
+  {
     currentMatrixBrightnessLevel = map(progressBar, 1, maxProgressBar, 0, maxMatrixBrightnessLevel);
     matrix.writeMatrixBrightness(currentMatrixBrightnessLevel);
     this->updateDisplay();
   }
   
-  if (debouncer(startTime, finishDelay) && joystick.isPressed()) {
+  if (debouncer(startTime, finishDelay) && joystick.isPressed()) 
+  {
     this->settingsState->setMatrixBrightnessLevel(currentMatrixBrightnessLevel);
     game.changeState(GameStateList::SettingsState);
   }
@@ -345,6 +381,7 @@ void SettingsMatrixBrightnessState::updateState() {
 
 void SettingsMatrixBrightnessState::onExit()
 {
+  matrix.clearMatrix();
   free(title);
   lcd.clear();
 }

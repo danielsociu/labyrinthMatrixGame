@@ -155,6 +155,10 @@ void RenderedRoom::drawPosition(byte x, byte y)
   renderedRoom[x] = renderedRoom[x] | (B1<<y);
 }
 
+bool RenderedRoom::checkInside(byte x, byte y)
+{
+  return x >= 0 && x < renderedRoomLength && y >= 0 && y < renderedRoomLength;
+}
 
 RenderedRoom* MapEngine::getRender()
 {
@@ -178,7 +182,9 @@ byte MapEngine::generateRandomRoad()
 }
 
 void MapEngine::generateNewRandomRoom(byte direction) {
+  byte difficulty = game.getSettingsState()->getDifficulty();
   byte value = currentRenderedRoom->getRoad(direction);
+  bool hasEnemy = false;
   direction = direction ^ B10;
   this->currentRenderedRoom->setRoad(0);
   this->currentRenderedRoom->changeRoad(direction, value);
@@ -188,6 +194,10 @@ void MapEngine::generateNewRandomRoom(byte direction) {
       this->currentRenderedRoom->changeRoad(dir, gate);
     }
   }
+  if (random(100) < (Enemy::spawnChance + difficulty * Enemy::spawnMultiplier)) {
+    hasEnemy = true;
+  }
+  this->currentRenderedRoom->setEnemy(hasEnemy);
 }
 
 void MapEngine::setCurrentRoom(byte road, bool hasEnemy, bool hasExit)
@@ -214,10 +224,48 @@ void MapEngine::drawEntity(Entity* entity)
   }
 }
 
+void MapEngine::drawAttack(Entity* entity) {
+  byte attackRange = entity->getAttackRange();
+  byte x = entity->getX();
+  byte y = entity->getY();
+  const short* xLine = entity->getAttackX();
+  const short* yLine = entity->getAttackY();
+  for (byte line = 0; line < attackRange; ++line) 
+  {
+    byte newX = x + xLine[line];
+    byte newY = y + yLine[line];
+    if (this->currentRenderedRoom->checkInside(newX, newY))
+    {
+      this->currentRenderedRoom->drawPosition(newX, newY);
+    }
+  }
+}
+
 // byte MapEngine::getRoad(Entity* entity)
 // {
 //   return this->getRender()->getRoad(entity->getX(), entity->getY());
 // }
+
+bool MapEngine::checkInRangeOfAttack(Entity* attacker, Entity* checked)
+{
+  byte attackRange = attacker->getAttackRange();
+  byte x = attacker->getX();
+  byte y = attacker->getY();
+  byte checkedX = checked->getX();
+  byte checkedY = checked->getY();
+  const short* xLine = attacker->getAttackX();
+  const short* yLine = attacker->getAttackY();
+  for (byte line = 0; line < attackRange; ++line) 
+  {
+    byte newX = x + xLine[line];
+    byte newY = y + yLine[line];
+    if (checkedX == newX && checkedY == newY) 
+    {
+      return true;
+    }
+  }
+  return false;
+}
 
 void MapEngine::renderMap()
 {

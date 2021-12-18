@@ -118,6 +118,10 @@ short Entity::dealDamage()
   return this->damage;
 }
 
+constexpr short Player::attackXVector[directionsCount][attackRange];
+
+constexpr short Player::attackYVector[directionsCount][attackRange];
+
 Player::Player(byte x, byte y): Entity(x, y, defaultHealth) 
 {
   lastMoved = millis();
@@ -148,17 +152,96 @@ void Player::setLastMoved(unsigned long lastMoved)
   this->lastMoved = lastMoved;
 }
 
+void Player::setLastAttack(unsigned long lastAttack)
+{
+  this->lastAttack = lastAttack;
+}
+
+unsigned long Player::getLastAttack()
+{
+  return this->lastAttack;
+}
+
+void Player::setAttacking(unsigned long attacking)
+{
+  this->attacking = attacking;
+}
+
+unsigned long Player::getAttacking()
+{
+  return this->attacking;
+}
+
+void Player::setPlayerAttacked(bool playerAttacked)
+{
+  this->playerAttacked =  playerAttacked;
+}
+
+bool Player::getPlayerAttacked()
+{
+  return this->playerAttacked;
+}
+
+short Player::dealDamage()
+{
+  return defaultAttack;
+}
+
+const short* Player::getAttackX()
+{
+  return attackXVector[direction];
+}
+
+const short* Player::getAttackY()
+{
+  return attackYVector[direction];
+}
+
+byte Player::getAttackRange()
+{
+  return attackRange;
+}
+
+constexpr short Enemy::attackXVector[];
+
+constexpr short Enemy::attackYVector[];
+
+Enemy::Enemy() : Entity (2 + random(3), 2 + random(3), Enemy::defaultHealth + (game.getSettingsState()->getDifficulty() * Enemy::healthMultiplier))
+{
+}
+
+
 Enemy::Enemy(byte x, byte y, short health) : Entity(x, y, health)
 {
 
 }
 
-void Enemy::setLastAttacked(unsigned long lastAttacked)
+void Enemy::setLastAttack(unsigned long lastAttack)
 {
-  this->lastAttacked = lastAttacked;
+  this->lastAttack = lastAttack;
 }
 
-unsigned long Enemy::getLastAttacked()
+unsigned long Enemy::getLastAttack()
 {
-  return this->lastAttacked;
+  return this->lastAttack;
+}
+
+short Enemy::dealDamage()
+{
+  return defaultAttack + (game.getSettingsState()->getDifficulty() * attackMultiplier);
+}
+
+const short* Enemy::getAttackX()
+{
+  return Enemy::attackXVector;
+}
+
+const short* Enemy::getAttackY()
+{
+  return Enemy::attackYVector;
+}
+
+byte Enemy::getAttackRange()
+{
+  return Enemy::attackRange;
 }

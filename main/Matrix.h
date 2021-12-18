@@ -15,6 +15,8 @@ private:
 public:
   Matrix(byte, byte, byte);
   byte getMatrixSize();
+  void lightMatrix();
+  void clearMatrix();
   void updateMatrix(RenderedRoom* renderedRoom);
   void writeMatrixBrightness(short value);
 };

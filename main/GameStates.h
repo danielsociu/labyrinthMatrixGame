@@ -66,6 +66,8 @@ class GameState : public State
   int numberOfLines = 32;
   MapEngine *mapEngine;
   Player* player;
+  Enemy* enemy;
+  bool damagedPlayer;
 
   void loadingState();
 public:

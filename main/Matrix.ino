@@ -26,10 +26,25 @@ void Matrix::updateMatrix(RenderedRoom *renderedRoom)
 //    B11111111,
 //  };
   
-  for (byte row = 0; row < matrixSize; ++row) {
+  for (byte row = 0; row < matrixSize; ++row) 
+  {
     ledControl->setRow(0, row, renderedRoom->getLine(row));
 //    ledControl->setRow(0, row, mapping[row]);
   }
+}
+
+void Matrix::lightMatrix() 
+{
+  byte line = B11111111;
+  for (byte row = 0; row < matrixSize; ++row)
+  {
+    ledControl->setRow(0, row, line);
+  }
+}
+
+void Matrix::clearMatrix()
+{
+  ledControl->clearDisplay(0);
 }
 
 byte Matrix::getMatrixSize()
@@ -37,6 +52,7 @@ byte Matrix::getMatrixSize()
   return this->matrixSize;
 }
 
-void Matrix::writeMatrixBrightness(short value) {
+void Matrix::writeMatrixBrightness(short value) 
+{
   ledControl->setIntensity(0, value);
 }
