@@ -1,12 +1,14 @@
 #include "GameStates.h"
 #include "Config.h"
-#include "Utils.h"
 #include "GameEngine.h"
 #include "Map.h"
 //#include "SettingsStates.h"
 
 
 // Intro State *****************************************
+
+constexpr char IntroState::titleLine1[];
+constexpr char IntroState::titleLine2[];
 
 IntroState::IntroState() 
 {
@@ -16,10 +18,6 @@ void IntroState::onEntry()
 {
   lcd.clear();
   startTime = millis();
-  titleLine1 = (char*)malloc(sizeof(char) * stringLength);
-  titleLine2 = (char*)malloc(sizeof(char) * stringLength);
-  strcpy(titleLine1, "DOOMed in Led's");
-  strcpy(titleLine2, "Labyrinth");
   this->updateDisplay();
 }
 
@@ -39,12 +37,15 @@ void IntroState::updateState() {
 
 void IntroState::onExit()
 {
-  free(titleLine1);
-  free(titleLine2);
   lcd.clear();
 }
 
 // Menu State *******************************************
+
+constexpr char MenuState::newGameText[];
+constexpr char MenuState::highscoresText[];
+constexpr char MenuState::settingsText[];
+constexpr char MenuState::aboutText[];
 
 MenuState::MenuState() 
 {
@@ -58,17 +59,7 @@ void MenuState::onEntry()
 {
   startTime = millis();
 
-  newGameText = (char*)malloc(sizeof(char) * stringLength);
-  highscoresText = (char*)malloc(sizeof(char) * stringLength);
-  settingsText = (char*)malloc(sizeof(char) * stringLength);
-  aboutText = (char*)malloc(sizeof(char) * stringLength);
-
-  strcpy(newGameText, "New Game");
-  strcpy(highscoresText, "Highscores");
-  strcpy(settingsText, "Settings");
-  strcpy(aboutText, "About");
-
-  displayMap = (char**)malloc(sizeof(char*) * this->optionsCount);
+  displayMap = (const char**)malloc(sizeof(const char*) * this->optionsCount);
   displayMap[menuOptions::newGame]    = newGameText;
   displayMap[menuOptions::highscores] = highscoresText;
   displayMap[menuOptions::settings]   = settingsText;
@@ -134,10 +125,6 @@ void MenuState::updateState()
 
 void MenuState::onExit()
 {
-  free(newGameText);
-  free(highscoresText);
-  free(settingsText);
-  free(aboutText);
   free(displayMap);
   lcd.clear();
 }
@@ -469,6 +456,12 @@ void HighscoresState::writeEEPROM(byte position, char* name, int score)
 }
 
 // Settings State ****************************************
+constexpr char SettingsState::playerNameText[];
+constexpr char SettingsState::difficultyText[];
+constexpr char SettingsState::contrastLevelText[];
+constexpr char SettingsState::ledBrightnessLevelText[];
+constexpr char SettingsState::matrixBrightnessLevelText[];
+constexpr char SettingsState::backText[];
 
 SettingsState::SettingsState()
 {
@@ -502,20 +495,7 @@ void SettingsState::onEntry()
   lcd.clear();
   startTime = millis();
   
-  playerNameText = (char*)malloc(sizeof(char) * stringLength);
-  difficultyText = (char*)malloc(sizeof(char) * stringLength);
-  contrastLevelText = (char*)malloc(sizeof(char) * stringLength);
-  ledBrightnessLevelText = (char*)malloc(sizeof(char) * stringLength);
-  matrixBrightnessLevelText = (char*)malloc(sizeof(char) * stringLength);
-  backText = (char*)malloc(sizeof(char) * stringLength);
-  strcpy(playerNameText, "Name");
-  strcpy(difficultyText, "Difficulty");
-  strcpy(contrastLevelText, "Contrast");
-  strcpy(ledBrightnessLevelText, "Brightness");
-  strcpy(matrixBrightnessLevelText, "Map Bright.");
-  strcpy(backText, "Back <<");
-
-  displayMap = (char**)malloc(sizeof(char*) * this->optionsCount);
+  displayMap = (const char**)malloc(sizeof(char*) * this->optionsCount);
   displayMap[settingsOptions::playerNameOption]             = playerNameText;
   displayMap[settingsOptions::difficultyOption]             = difficultyText;
   displayMap[settingsOptions::contrastLevelOption]          = contrastLevelText;
@@ -590,12 +570,6 @@ void SettingsState::updateState() {
 
 void SettingsState::onExit()
 {
-  free(playerNameText);
-  free(difficultyText);
-  free(contrastLevelText);
-  free(ledBrightnessLevelText);
-  free(matrixBrightnessLevelText);
-  free(backText);
   free(displayMap);
   lcd.clear();
 }
@@ -679,10 +653,14 @@ SettingsMatrixBrightnessState* SettingsState::getSettingsMatrixBrightnessState()
 }
 
 // About State *******************************************
+constexpr char AboutState::firstLine[];
+constexpr char AboutState::secondLine[];
 
 AboutState::AboutState() 
 {
-  
+  firstLineLength = strlen(firstLine);
+  secondLineLength = strlen(secondLine);
+  maxLength = max(firstLineLength, secondLineLength);
 }
 
 
@@ -692,15 +670,6 @@ void AboutState::onEntry()
   currentPrinted = 0;
   startTime = millis();
   lastTimeScrolled = millis();
-  
-  firstLine = (char*)malloc(sizeof(char) * 64);
-  secondLine = (char*)malloc(sizeof(char) * 64);
-  strcpy(firstLine,  "               DOOMed in Led's labyrinth by Daniel Sociu ");
-  strcpy(secondLine, "               Github: https://tinyurl.com/5n97tass      ");
-  
-  firstLineLength = strlen(firstLine);
-  secondLineLength = strlen(secondLine);
-  maxLength = max(firstLineLength, secondLineLength);
   
   this->updateDisplay();
 }
@@ -736,7 +705,5 @@ void AboutState::updateState() {
 
 void AboutState::onExit()
 {
-  free(firstLine);
-  free(secondLine);
   lcd.clear();
 }

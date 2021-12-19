@@ -4,21 +4,19 @@ class SettingsState;
 
 class SettingsNameState : public State
 {
+  static constexpr byte titleLength = 6;
+  static constexpr byte numberOfChars = 27;
+  static constexpr char title[titleLength] = "Name:";
+  static constexpr char charMap[numberOfChars] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 private:
   unsigned long startTime;
-  const byte screenLength = 16;
   const byte padding = 3;
   const short finishDelay = 300;
 
   const byte maxNameLength = 8;
   byte currentPosition;
   
-  const byte numberOfChars = 27;
-  char *charMap;
-
-  const byte titleLength = 6;
   byte nameLength;
-  char *title;
   char *currentName;
   SettingsState *settingsState;
   
@@ -32,13 +30,11 @@ public:
 
 class SettingsDifficultyState : public State
 {
+  static constexpr byte titleLength = 12;
+  static constexpr char title[titleLength] = "Difficulty:";
 private:
   unsigned long startTime;
   const short finishDelay = 300;
-  
-  const byte titleLength = 12;
-  char *title;
-  const byte screenLength = 16;
   
   SettingsState *settingsState;
   short currentDifficulty;
@@ -53,14 +49,12 @@ public:
 
 class SettingsContrastState : public State
 {
+  const byte titleLength = 10;
+  static constexpr char title[] = "Contrast:";
 private:
   unsigned long startTime;
   const short finishDelay = 300;
   
-  const byte titleLength = 10;
-  char *title;
-  const byte screenLength = 16;
-
   const byte maxProgressBar = 16;
   const short maxContrastValue = 100;
 
@@ -78,14 +72,12 @@ public:
 
 class SettingsLedBrightnessState : public State
 {
+  static constexpr byte titleLength = 12;
+  static constexpr char title[titleLength] = "Brightness:";
 private:
   unsigned long startTime;
   const short finishDelay = 300;
   
-  const byte titleLength = 12;
-  char *title;
-  const byte screenLength = 16;
-
   const byte maxProgressBar = 16;
   const short maxLedBrightnessValue = 255;
 
@@ -103,13 +95,12 @@ public:
 
 class SettingsMatrixBrightnessState : public State
 {
+  static constexpr byte titleLength = 13;
+  static constexpr char title[titleLength] = "Map Bright.:";
 private:
   unsigned long startTime;
   const short finishDelay = 300;
   
-  const byte titleLength = 13;
-  char *title;
-  const byte screenLength = 16;
 
   const byte maxProgressBar = 16;
   const short maxMatrixBrightnessLevel = 15;

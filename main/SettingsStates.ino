@@ -4,6 +4,9 @@
 #include "GameEngine.h"
 #include "GameStates.h"
 
+constexpr char SettingsNameState::title[];
+constexpr char SettingsNameState::charMap[];
+
 SettingsNameState::SettingsNameState (SettingsState* settingsState)
 {
   this->settingsState = settingsState;
@@ -12,11 +15,6 @@ SettingsNameState::SettingsNameState (SettingsState* settingsState)
 void SettingsNameState::onEntry()
 {
   startTime = millis();
-
-  title = (char*)malloc(sizeof(char) * titleLength);
-  charMap = (char*)malloc(sizeof(char) * numberOfChars);
-  strcpy(title, "Name:");
-  strcpy(charMap, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 
   currentName = (char*)malloc(maxNameLength * sizeof(char));
   strcpy(this->currentName, settingsState->getPlayerName());
@@ -115,14 +113,14 @@ void SettingsNameState::updateState()
 
 void SettingsNameState::onExit()
 {
-  free(charMap);
-  free(title);
   free(currentName);
   lcd.noBlink();
   lcd.clear();
 }
 
 // SettingsDifficulty State *******************************************
+
+constexpr char SettingsDifficultyState::title[];
 
 SettingsDifficultyState::SettingsDifficultyState(SettingsState* settingsState) 
 {
@@ -133,9 +131,6 @@ void SettingsDifficultyState::onEntry()
 {
   lcd.clear();
   startTime = millis();
-
-  title = (char*)malloc(sizeof(char) * titleLength);
-  strcpy(title, "Difficulty:");
 
   currentDifficulty = settingsState->getDifficulty();
   this->updateDisplay();
@@ -182,12 +177,13 @@ void SettingsDifficultyState::updateState()
 
 void SettingsDifficultyState::onExit()
 {
-  free(title);
   lcd.clear();
 }
 
 
 // SettingsContrast State *******************************************
+
+constexpr char SettingsContrastState::title[];
 
 SettingsContrastState::SettingsContrastState(SettingsState* settingsState) 
 {
@@ -198,9 +194,6 @@ void SettingsContrastState::onEntry()
 {
   lcd.clear();
   startTime = millis();
-
-  title = (char*)malloc(sizeof(char) * 10);
-  strcpy(title, "Contrast:");
 
   currentContrastLevel = settingsState->getContrastLevel();
   progressBar = map(currentContrastLevel, 0, maxContrastValue, 0, maxProgressBar);
@@ -249,11 +242,12 @@ void SettingsContrastState::updateState()
 
 void SettingsContrastState::onExit()
 {
-  free(title);
   lcd.clear();
 }
 
 // SettingsBrightness State *******************************************
+
+constexpr char SettingsLedBrightnessState::title[];
 
 SettingsLedBrightnessState::SettingsLedBrightnessState(SettingsState* settingsState) 
 {
@@ -264,8 +258,6 @@ void SettingsLedBrightnessState::onEntry()
 {
   lcd.clear();
   startTime = millis();
-  title = (char*)malloc(sizeof(char) * titleLength);
-  strcpy(title, "Brightness:");
 
   currentLedBrightnessLevel = settingsState->getLedBrightnessLevel();
   progressBar = map(currentLedBrightnessLevel, 0, maxLedBrightnessValue, 0, maxProgressBar);
@@ -313,12 +305,13 @@ void SettingsLedBrightnessState::updateState()
 
 void SettingsLedBrightnessState::onExit()
 {
-  free(title);
   lcd.clear();
 }
 
 
-// SettingsBrightness State *******************************************
+// SettingsMatrixBrightnessState State *******************************************
+
+constexpr char SettingsMatrixBrightnessState::title[];
 
 SettingsMatrixBrightnessState::SettingsMatrixBrightnessState(SettingsState* settingsState) 
 {
@@ -331,8 +324,6 @@ void SettingsMatrixBrightnessState::onEntry()
   startTime = millis();
 
   matrix.lightMatrix();
-  title = (char*)malloc(sizeof(char) * titleLength);
-  strcpy(title, "Map Bright.:");
 
   currentMatrixBrightnessLevel = settingsState->getMatrixBrightnessLevel();
   progressBar = map(currentMatrixBrightnessLevel, 0, maxMatrixBrightnessLevel, 0, maxProgressBar);
@@ -382,6 +373,5 @@ void SettingsMatrixBrightnessState::updateState()
 void SettingsMatrixBrightnessState::onExit()
 {
   matrix.clearMatrix();
-  free(title);
   lcd.clear();
 }

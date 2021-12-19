@@ -1,4 +1,5 @@
 #pragma once
+#include "Config.h"
 #include "GameState.h"
 #include "SettingsStates.h"
 #include "Map.h"
@@ -7,11 +8,11 @@
 
 class IntroState : public State
 {
+  static constexpr char titleLine1[16] = "DOOMed in Led's";
+  static constexpr char titleLine2[10] = "Labyrinth";
 private:
   const short introTimeout = 5000;
   unsigned long startTime;
-  char *titleLine1;
-  char *titleLine2;
 
 public:
   IntroState();
@@ -23,6 +24,10 @@ public:
 
 class MenuState : public State
 {
+  static constexpr char newGameText[9] = "New Game";
+  static constexpr char highscoresText[11] = "Highscores";
+  static constexpr char settingsText[9] = "Settings";
+  static constexpr char aboutText[6] = "About";
 private:
   int line;
   int selectedLine;
@@ -34,12 +39,7 @@ private:
   unsigned long startTime;
   int pressDelay = 300;
 
-  char* newGameText;
-  char* highscoresText;
-  char* settingsText;
-  char* aboutText;
-  
-  char **displayMap;
+  const char ** displayMap;
   enum menuOptions {
     newGame,
 //    Continue,
@@ -128,6 +128,12 @@ public:
 
 class SettingsState : public State
 {
+  static constexpr char playerNameText[5] = "Name";
+  static constexpr char difficultyText[11] =  "Difficulty";
+  static constexpr char contrastLevelText[9] = "Contrast";
+  static constexpr char ledBrightnessLevelText[11] = "Brightness";
+  static constexpr char matrixBrightnessLevelText[12] = "Map Bright.";
+  static constexpr char backText[8] = "Back <<";
 private:
   byte line;
   byte selectedLine;
@@ -139,7 +145,7 @@ private:
   char selectedCharacter = '>';
   const byte padding = 4;
   
-  char **displayMap;
+  const char **displayMap;
 
   // menu setters
   SettingsNameState *settingsNameState;
@@ -149,13 +155,6 @@ private:
   SettingsMatrixBrightnessState * settingsMatrixBrightnessState;
 
 protected:
-  char* playerNameText;
-  char* difficultyText;
-  char* contrastLevelText;
-  char* ledBrightnessLevelText;
-  char* matrixBrightnessLevelText;
-  char* backText;
-  
   char* playerName;
   short difficulty;
   short contrastLevel;
@@ -205,9 +204,9 @@ public:
 
 class AboutState: public State
 {
+  static constexpr char firstLine[]  = "               DOOMed in Led's labyrinth by Daniel Sociu ";
+  static constexpr char secondLine[] = "               Github: https://tinyurl.com/5n97tass      ";
 private:
-  char *firstLine;
-  char *secondLine;
 
   short delayScroll = 400;
   short skipDelay = 500;
