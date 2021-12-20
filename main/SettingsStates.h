@@ -8,7 +8,7 @@ class SettingsNameState : public State
         static constexpr byte titleLength = 6;
         static constexpr byte numberOfChars = 27;
 //        static constexpr char title[titleLength] = "Name:";
-        static constexpr char charMap[numberOfChars] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+//        static constexpr char charMap[numberOfChars] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private:
         unsigned long startTime;
         const byte padding = 3;

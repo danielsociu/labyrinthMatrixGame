@@ -5,7 +5,7 @@
 #include "GameStates.h"
 
 //constexpr char SettingsNameState::title[];
-constexpr char SettingsNameState::charMap[];
+//constexpr char SettingsNameState::charMap[];
 
 SettingsNameState::SettingsNameState (SettingsState* settingsState)
 {
@@ -68,10 +68,17 @@ void SettingsNameState::updateState()
         }
         else 
         {
-            currentChar = 26;
+            currentChar = (numberOfChars - 1);
         }
-        currentChar++;
-        currentName[currentPosition] = charMap[currentChar % numberOfChars];
+        currentChar = (currentChar + 1) % numberOfChars;
+        if (currentChar == (numberOfChars - 1)) 
+        {
+            currentName[currentPosition] = '\0';
+        } 
+        else
+        {
+           currentName[currentPosition] = ('A' + currentChar);
+        }
         change = true;
     }
     if (joystick.onceMoveDown())
@@ -83,10 +90,17 @@ void SettingsNameState::updateState()
         }
         else 
         {
-            currentChar = 26;
+            currentChar = (numberOfChars - 1);
         }
-        currentChar--;
-        currentName[currentPosition] = charMap[currentChar % numberOfChars];
+        currentChar = (currentChar - 1) % numberOfChars;
+        if (currentChar == (numberOfChars - 1)) 
+        {
+            currentName[currentPosition] = '\0';
+        } 
+        else
+        {
+           currentName[currentPosition] = ('A' + currentChar);
+        }
         change = true;
     }
     if (change) 
