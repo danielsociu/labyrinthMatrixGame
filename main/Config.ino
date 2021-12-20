@@ -17,34 +17,37 @@ const byte d5 = 3;
 const byte d6 = 2;
 const byte d7 = 1;
 
-byte progressBarChar[8] = {
-  B11111,
-  B11111,
-  B11111,
-  B11111,
-  B11111,
-  B11111,
-  B11111,
+byte progressBarChar[8] =
+{
+    B11111,
+    B11111,
+    B11111,
+    B11111,
+    B11111,
+    B11111,
+    B11111,
 };
 
-byte healthChar[8] = {
-  B00000,
-  B01010,
-  B11111,
-  B11111,
-  B01110,
-  B00100,
-  B00000
+byte healthChar[8] =
+{
+    B00000,
+    B01010,
+    B11111,
+    B11111,
+    B01110,
+    B00100,
+    B00000
 };
 
-byte enemyChar[8] = {
-  B00000,
-  B01110,
-  B10101,
-  B11111,
-  B11111,
-  B11111,
-  B10101,
+byte enemyChar[8] =
+{
+    B00000,
+    B01110,
+    B10101,
+    B11111,
+    B11111,
+    B11111,
+    B10101,
 };
 
 
@@ -61,25 +64,26 @@ short screenLength = 16;
 
 void setupRun() 
 {
-  pinMode(contrastPin, OUTPUT);
-  lcd.begin(screenLength, 2);
-  analogWrite(contrastPin, 30);
-  analogWrite(ledPin, 128);
-//  for (int i = 0; i < EEPROM.length(); ++i) {
-//    EEPROM.update(i, 0);
-//  }
-  lcd.createChar(0, progressBarChar);
-  lcd.createChar(1, healthChar);
-  lcd.createChar(2, enemyChar);
-  randomSeed(analogRead(13));
+    pinMode(contrastPin, OUTPUT);
+    lcd.begin(screenLength, 2);
+    analogWrite(contrastPin, 30);
+    analogWrite(ledPin, 128);
+    // for (int i = 0; i < EEPROM.length(); ++i)
+    // {
+    //   EEPROM.update(i, 0);
+    // }
+    lcd.createChar(0, progressBarChar);
+    lcd.createChar(1, healthChar);
+    lcd.createChar(2, enemyChar);
+    randomSeed(analogRead(13));
 }
 
 void writeContrast(int value) 
 {
-  analogWrite(contrastPin, value);
+    analogWrite(contrastPin, value);
 }
 
 void writeLedBrightness(int value) 
 {
-  analogWrite(ledPin, value);
+    analogWrite(ledPin, value);
 }

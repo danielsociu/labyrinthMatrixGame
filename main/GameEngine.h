@@ -3,31 +3,32 @@
 
 class GameEngine
 {
-private:
-  IntroState* introState;
-  MenuState* menuState;
-  SettingsState* settingsState;
-  AboutState* aboutState;
-  HighscoresState* highscoresState;
-  GameState* gameState;
-  
-public:
-  //constructor and deconstructor
-  GameEngine();
-  // ~GameEngine();
+    private:
+        IntroState* introState;
+        MenuState* menuState;
+        SettingsState* settingsState;
+        AboutState* aboutState;
+        HighscoresState* highscoresState;
+        GameState* gameState;
 
-  // void pushState(GameState *state);
-  // void popState();
-  void changeState(GameStateList);
+    public:
+        //constructor and deconstructor
+        GameEngine();
+        // ~GameEngine();
 
-  SettingsState* getSettingsState();
+        // void pushState(GameState *state);
+        // void popState();
+        void changeState(GameStateList);
 
-  //function to get the current State (note this function must be a pointer)
-  // GameState *currentState();
+        SettingsState* getSettingsState();
+        HighscoresState* getHighscoresState();
 
-  //game loop function
-  void gameLoop();
+        //function to get the current State (note this function must be a pointer)
+        // GameState *currentState();
 
-private:
-  State* currentState;
+        //game loop function
+        void gameLoop();
+
+    private:
+        State* currentState;
 };

@@ -1,4 +1,4 @@
- #include "Config.h"
+#include "Config.h"
 #include "GameEngine.h"
 
 // TODO: Change contrast resistor to 1k
@@ -18,12 +18,12 @@
 
 void setup()
 {
-  setupRun();
-  game.changeState(GameStateList::IntroState);
+    setupRun();
+    game.changeState(GameStateList::IntroState);
 }
 
 void loop()
 {
-//  game->changeState(GameStateList::IntroState);
-  game.gameLoop();
+    //  game->changeState(GameStateList::IntroState);
+    game.gameLoop();
 }

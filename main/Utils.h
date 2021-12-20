@@ -10,10 +10,10 @@ extern const byte directionsCount = 4;
 
 bool debouncer(unsigned long startTime, unsigned long duration)
 {
-  if (millis() - startTime > duration) {
-    return true;
-  }
-  return false;
+    if (millis() - startTime > duration) {
+        return true;
+    }
+    return false;
 }
 
 // free memory checker
@@ -24,12 +24,12 @@ extern "C" char* sbrk(int incr);
 extern char *__brkval;
 #endif  // __arm__
 int freeMemory() {
-  char top;
+    char top;
 #ifdef __arm__
-  return &top - reinterpret_cast<char*>(sbrk(0));
+    return &top - reinterpret_cast<char*>(sbrk(0));
 #elif defined(CORE_TEENSY) || (ARDUINO > 103 && ARDUINO != 151)
-  return &top - __brkval;
+    return &top - __brkval;
 #else  // __arm__
-  return __brkval ? &top - __brkval : &top - __malloc_heap_start;
+    return __brkval ? &top - __brkval : &top - __malloc_heap_start;
 #endif  // __arm__
 }
