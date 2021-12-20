@@ -7,7 +7,7 @@ class SettingsNameState : public State
     public:
         static constexpr byte titleLength = 6;
         static constexpr byte numberOfChars = 27;
-        static constexpr char title[titleLength] = "Name:";
+//        static constexpr char title[titleLength] = "Name:";
         static constexpr char charMap[numberOfChars] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private:
         unsigned long startTime;
@@ -33,7 +33,7 @@ class SettingsDifficultyState : public State
 {
     public:
         static constexpr byte titleLength = 12;
-        static constexpr char title[titleLength] = "Difficulty:";
+//        static constexpr char title[titleLength] = "Difficulty:";
     private:
         unsigned long startTime;
         const short finishDelay = 300;
@@ -52,7 +52,7 @@ class SettingsContrastState : public State
 {
     public:
         const byte titleLength = 10;
-        static constexpr char title[] = "Contrast:";
+//        static constexpr char title[] = "Contrast:";
     private:
         unsigned long startTime;
         const short finishDelay = 300;
@@ -76,7 +76,7 @@ class SettingsLedBrightnessState : public State
 {
     public:
         static constexpr byte titleLength = 12;
-        static constexpr char title[titleLength] = "Brightness:";
+//        static constexpr char title[titleLength] = "Brightness:";
     private:
         unsigned long startTime;
         const short finishDelay = 300;
@@ -100,7 +100,7 @@ class SettingsMatrixBrightnessState : public State
 {
     public:
         static constexpr byte titleLength = 13;
-        static constexpr char title[titleLength] = "Map Bright.:";
+//        static constexpr char title[titleLength] = "Map Bright.:";
     private:
         unsigned long startTime;
         const short finishDelay = 300;

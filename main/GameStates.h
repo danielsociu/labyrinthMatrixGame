@@ -8,9 +8,9 @@
 
 class IntroState : public State
 {
-    public:
-        static constexpr char titleLine1[16] = "DOOMed in Led's";
-        static constexpr char titleLine2[10] = "Labyrinth";
+//    public:
+//        static constexpr char titleLine1[16] = "DOOMed in Led's";
+//        static constexpr char titleLine2[10] = "Labyrinth";
     private:
         const short introTimeout = 5000;
         unsigned long startTime;
@@ -69,36 +69,43 @@ class GameState : public State
         static constexpr short enemyKillRewardMultiplier = 10;
         static constexpr short timeScoreLimit = 1000;
         static constexpr short winScoreReward = 200;
-        static constexpr char loadingText[11] = "Loading...";
         static constexpr byte gameoverPadding = 3;
-        static constexpr char gameoverText[11] = "Game over!";
+//        static constexpr char gameoverText[11] = "Game over!";
         static constexpr char gamefinshedScoreText[8] = "Score: ";
         static constexpr byte gamewonPadding = 2;
-        static constexpr char gamewonText[14] = "You got away!";
+//        static constexpr char gamewonText[14] = "You got away!";
         static constexpr byte newHighscorePadding = 0;
         static constexpr char newHighscoreText[13] = "New hi-score";
         static constexpr char newHighscoreSaveText[7] = "Save: ";
-        static constexpr char newHighscoreOption1[9] = ">yes  no";
-        static constexpr char newHighscoreOption2[9] = ">yes  no";
+//        static constexpr char newHighscoreOption1[9] = ">yes  no";
+//        static constexpr char newHighscoreOption2[9] = " yes >no";
+//        static constexpr char leftText[7] = "left: ";
+        static constexpr short optionsCount = 2;
+        static constexpr short optionTimer = 1000;
+        static constexpr short gameFinishedTimer = 300;
+        static constexpr short newHighscoreTimer = 300;
     private:
         bool gameFinished;
         int score;
         unsigned long startTime;
-        int numberOfLines = 32;
         MapEngine *mapEngine;
         Player* player;
         Enemy* enemy;
+        bool moved;
+        bool crossedX;
+        bool crossedY;
+        byte initialX;
+        byte initialY;
         bool escaped;
         bool newHighscore;
         short highscoreLine;
         short totalEnemiesToKill;
+        byte option;
+        byte lastOption;
         short totalRoomsToVisit;
         unsigned long gameFinishedTime;
-        const short gameFinishedTimer = 300;
         unsigned long newHighscoreTime;
-        const short newHighscoreTimer = 300;
 
-        void loadingState();
     public:
         GameState();
         void setScore(short score);
@@ -237,8 +244,8 @@ class SettingsState : public State
 class AboutState: public State
 {
     public:
-        static constexpr char firstLine[]  = "               DOOMed in Led's labyrinth by Daniel Sociu ";
-        static constexpr char secondLine[] = "               Github: https://tinyurl.com/5n97tass      ";
+        static constexpr char firstLine[64]  = "               DOOMed in Led's labyrinth by Daniel Sociu ";
+        static constexpr char secondLine[64] = "               Github: https://tinyurl.com/5n97tass      ";
 
     private:
         short delayScroll = 400;

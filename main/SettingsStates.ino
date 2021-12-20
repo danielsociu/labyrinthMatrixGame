@@ -4,7 +4,7 @@
 #include "GameEngine.h"
 #include "GameStates.h"
 
-constexpr char SettingsNameState::title[];
+//constexpr char SettingsNameState::title[];
 constexpr char SettingsNameState::charMap[];
 
 SettingsNameState::SettingsNameState (SettingsState* settingsState)
@@ -34,7 +34,7 @@ void SettingsNameState::updateDisplay()
 {
     lcd.clear();
     lcd.setCursor((screenLength - titleLength) / 2, 0);
-    lcd.print(title);
+    lcd.print(F("Name:"));
     lcd.setCursor(padding, 1);
     lcd.print(currentName);
 }
@@ -124,7 +124,7 @@ void SettingsNameState::onExit()
 
 // SettingsDifficulty State *******************************************
 
-constexpr char SettingsDifficultyState::title[];
+//constexpr char SettingsDifficultyState::title[];
 
 SettingsDifficultyState::SettingsDifficultyState(SettingsState* settingsState) 
 {
@@ -144,7 +144,7 @@ void SettingsDifficultyState::updateDisplay()
 {
     lcd.clear();
     lcd.setCursor((screenLength - titleLength) / 2, 0);
-    lcd.print(title);
+    lcd.print(F("Difficulty:"));
     lcd.setCursor(screenLength / 2 - 3, 1);
     lcd.print('-');
     lcd.setCursor(screenLength / 2, 1);
@@ -187,7 +187,7 @@ void SettingsDifficultyState::onExit()
 
 // SettingsContrast State *******************************************
 
-constexpr char SettingsContrastState::title[];
+//constexpr char SettingsContrastState::title[];
 
 SettingsContrastState::SettingsContrastState(SettingsState* settingsState) 
 {
@@ -208,7 +208,7 @@ void SettingsContrastState::updateDisplay()
 {
     lcd.clear();
     lcd.setCursor((screenLength - titleLength) / 2, 0);
-    lcd.print(title);
+    lcd.print(F("Contrast:"));
     for (int i = 0; i < progressBar; i++) 
     {
         lcd.setCursor(i, 1);
@@ -251,7 +251,7 @@ void SettingsContrastState::onExit()
 
 // SettingsBrightness State *******************************************
 
-constexpr char SettingsLedBrightnessState::title[];
+//constexpr char SettingsLedBrightnessState::title[];
 
 SettingsLedBrightnessState::SettingsLedBrightnessState(SettingsState* settingsState) 
 {
@@ -272,7 +272,7 @@ void SettingsLedBrightnessState::updateDisplay()
 {
     lcd.clear();
     lcd.setCursor((screenLength - titleLength) / 2, 0);
-    lcd.print(title);
+    lcd.print("Brightness:");
     for (int i = 0; i < progressBar; i++) 
     {
         lcd.setCursor(i, 1);
@@ -316,7 +316,7 @@ void SettingsLedBrightnessState::onExit()
 
 // SettingsMatrixBrightnessState State *******************************************
 
-constexpr char SettingsMatrixBrightnessState::title[];
+//constexpr char SettingsMatrixBrightnessState::title[];
 
 SettingsMatrixBrightnessState::SettingsMatrixBrightnessState(SettingsState* settingsState) 
 {
@@ -339,7 +339,7 @@ void SettingsMatrixBrightnessState::updateDisplay()
 {
     lcd.clear();
     lcd.setCursor((screenLength - titleLength) / 2, 0);
-    lcd.print(title);
+    lcd.print(F("Map Bright.:"));
     for (int i = 0; i < progressBar; i++) 
     {
         lcd.setCursor(i, 1);

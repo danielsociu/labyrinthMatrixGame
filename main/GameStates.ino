@@ -7,8 +7,8 @@
 
 // Intro State *****************************************
 
-constexpr char IntroState::titleLine1[];
-constexpr char IntroState::titleLine2[];
+//constexpr char IntroState::titleLine1[];
+//constexpr char IntroState::titleLine2[];
 
 IntroState::IntroState() 
 {
@@ -24,9 +24,9 @@ void IntroState::onEntry()
 void IntroState::updateDisplay() 
 {
     lcd.setCursor(0, 0);
-    lcd.print(titleLine1);
+    lcd.print(F("DOOMed in Led's"));
     lcd.setCursor(3, 1);
-    lcd.print(titleLine2);
+    lcd.print(F("Labyrinth"));
 }
 
 void IntroState::updateState()
@@ -144,14 +144,14 @@ void MenuState::onExit()
 // Game State **********************************************
 
 
-constexpr char GameState::loadingText[];
-constexpr char GameState::gameoverText[];
+//constexpr char GameState::gameoverText[];
 constexpr char GameState::gamefinshedScoreText[];
-constexpr char GameState::gamewonText[];
+//constexpr char GameState::gamewonText[];
 constexpr char GameState::newHighscoreText[];
 constexpr char GameState::newHighscoreSaveText[];
-constexpr char GameState::newHighscoreOption1[];
-constexpr char GameState::newHighscoreOption2[];
+//constexpr char GameState::newHighscoreOption1[];
+//constexpr char GameState::newHighscoreOption2[];
+//constexpr char GameState::leftText[];
 
 GameState::GameState()
 {
@@ -166,7 +166,6 @@ void GameState::onEntry()
     gameFinished = 0;
     newHighscore = false;
     startTime = millis();
-    this->loadingState();
 
     mapEngine = new MapEngine();
     player = new Player(matrix.getMatrixSize() / 2 - 1, matrix.getMatrixSize() / 2 - 1);
@@ -184,11 +183,6 @@ void GameState::updateMatrix()
     matrix.updateMatrix(mapEngine->getRender());
 }
 
-void GameState::loadingState() 
-{
-    lcd.setCursor(3, 0);
-    lcd.print(loadingText);
-}
 
 void GameState::onGameFinished()
 {
@@ -222,7 +216,7 @@ void GameState::gameoverDisplay()
 {
     lcd.clear();
     lcd.setCursor(gameoverPadding, 0);
-    lcd.print(gameoverText);
+    lcd.print(F("Game over!"));
     lcd.setCursor(gameoverPadding, 1);
     lcd.print(gamefinshedScoreText);
     lcd.print(this->score);
@@ -232,7 +226,7 @@ void GameState::gamewonDisplay()
 {
     lcd.clear();
     lcd.setCursor(gamewonPadding, 0);
-    lcd.print(gamewonText);
+    lcd.print(F("You got away!"));
     lcd.setCursor(gamewonPadding, 1);
     lcd.print(gamefinshedScoreText);
     lcd.print(this->score);
@@ -257,11 +251,11 @@ void GameState::newHighscoreDisplay()
     lcd.print(newHighscoreSaveText);
     if (highscoreLine == 0)
     {
-        lcd.print(newHighscoreOption1);
+        lcd.print(F(">yes  no"));
     } 
     else 
     {
-        lcd.print(newHighscoreOption2);
+        lcd.print(F(" yes >no"));
     }
 }
 
@@ -275,13 +269,28 @@ void GameState::updateDisplay()
     lcd.setCursor(screenLength - 3, 0);
     lcd.print(player->getHealth());
     lcd.setCursor(0, 1);
-    lcd.print(totalEnemiesToKill - player->getEnemiesKilled());
-    lcd.print(";");
-    lcd.print(totalRoomsToVisit - player->getRoomsVisited());
-    lcd.print(";");
-    lcd.print(mapEngine->getRender()->getExitRoad());
-    //  lcd.print("Score:");
-    //  lcd.print(this->score);
+    // lcd.print(totalEnemiesToKill - player->getEnemiesKilled());
+    // lcd.print(";");
+    // lcd.print(totalRoomsToVisit - player->getRoomsVisited());
+    // lcd.print(";");
+    // lcd.print(mapEngine->getRender()->getExitRoad());
+    switch (option)
+    {
+        case 0:
+            lcd.print(gamefinshedScoreText);
+            lcd.print(this->score);
+            break;
+        case 1:
+            lcd.write(byte(2));
+            lcd.setCursor(1, 1);
+            lcd.print(F("left: "));
+            lcd.print(max(0, totalEnemiesToKill - player->getEnemiesKilled()));
+            break;
+        default:
+            lcd.print(gamefinshedScoreText);
+            lcd.print(this->score);
+            break;   
+    }
     if (mapEngine->getRender()->getEnemy())
     {
         lcd.setCursor(screenLength - 5, 1);
@@ -298,14 +307,18 @@ void GameState::updateState()
 {
     if (!gameFinished)
     {
+        option = (millis() / (optionTimer * optionsCount)) % optionsCount;
+        if (option != lastOption) {
+          lastOption = option;
+          this->updateDisplay();
+        }
         if (debouncer(player->getLastMoved(), Player::delayMovement)) 
         {
-            bool moved = false;
-            bool crossedX = false;
-            bool crossedY = false;
-            byte direction;
-            byte initialX = player->getX();
-            byte initialY = player->getY();
+            moved = false;
+            crossedX = false;
+            crossedY = false;
+            initialX = player->getX();
+            initialY = player->getY();
             if (joystick.moveUp())
             {
                 crossedX = player->decreaseX(); 

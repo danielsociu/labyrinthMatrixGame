@@ -2,6 +2,9 @@
 
 #include "Map.h"
 
+constexpr byte Matrix::xPixelArt[];
+constexpr byte Matrix::happyFacePixelArt[];
+
 Matrix::Matrix(byte dinPin, byte clockPin, byte loadPin)
 {
     this->dinPin = dinPin;
@@ -32,10 +35,10 @@ void Matrix::lightMatrix()
 
 void Matrix::drawX()
 {
-    byte xPixelArt[8] =
-    {
-        0xC3, 0xE7, 0x7E, 0x3C, 0x3C, 0x7E, 0xE7, 0xC3
-    };
+//    byte xPixelArt[8] =
+//    {
+//        0xC3, 0xE7, 0x7E, 0x3C, 0x3C, 0x7E, 0xE7, 0xC3
+//    };
     for (byte row = 0; row < matrixSize; ++row) 
     {
         ledControl->setRow(0, row, xPixelArt[row]);
@@ -44,13 +47,9 @@ void Matrix::drawX()
 
 void Matrix::drawHappyFace()
 {
-    byte xPixelArt[8] =
-    {
-        0x00, 0x00, 0x24, 0x00, 0xC3, 0x66, 0x3C, 0x00
-    };
     for (byte row = 0; row < matrixSize; ++row) 
     {
-        ledControl->setRow(0, row, xPixelArt[row]);
+        ledControl->setRow(0, row, happyFacePixelArt[row]);
     }
 }
 

@@ -199,12 +199,12 @@ bool RenderedRoom::isOnExit(byte x, byte y)
     {
         return false;
     }
-    if ((exitDirection == up && x == 0) || (exitDirection == down && x == 7))
+    if ((exitDirection == up && x == 0) || (exitDirection == down && x == (renderedRoomLength - 1)))
     {
         byte curExitRoad = this->getExitRoad();
-        return (y <= ((curExitRoad ^ B11) + 1) && (curExitRoad ^ B11) <= y);
+        return (y <= ((curExitRoad ^ B11)* 2 + 1) && (curExitRoad ^ B11) * 2 <= y);
     }
-    if ((exitDirection == right && y == 0) || (exitDirection == left && y == 7))
+    if ((exitDirection == right && y == 0) || (exitDirection == left && y == (renderedRoomLength - 1)))
     {
         byte curExitRoad = this->getExitRoad();
         return (x <= (curExitRoad * 2 + 1) && (curExitRoad * 2) <= x);
