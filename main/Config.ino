@@ -1,8 +1,10 @@
 #include "Config.h"
 
-const byte pinSW = 10;
+const byte pinSW = 8;
 const byte pinX = A0;
 const byte pinY = A1;
+
+const byte pinBuzzer = 10;
 
 const byte dinPin = 13;
 const byte clockPin = 12;
@@ -17,13 +19,19 @@ const byte d5 = 3;
 const byte d6 = 2;
 const byte d7 = 1;
 
+LiquidCrystal lcd (RS, enable, d4, d5, d6, d7);
+Joystick joystick(pinSW, pinX, pinY);
+GameEngine game = GameEngine();
+Matrix matrix = Matrix(dinPin, clockPin, loadPin);
+Buzzer buzzer = Buzzer(pinBuzzer);
+
 const short stringLength = 16;
 const short defaultDifficulty = 0;
 const short defaultContrast = 30;
 const short defaultLedBrightness = 128;
 const short defaultMatrixBrightness = 3;
 const short screenLength = 16;
-const char defaultUsername[] = "ANON";
+const char defaultUsername[5] = "ANON";
 
 byte progressBarChar[8] =
 {
@@ -57,13 +65,6 @@ byte enemyChar[8] =
     B11111,
     B10101,
 };
-
-
-LiquidCrystal lcd (RS, enable, d4, d5, d6, d7);
-Joystick joystick(pinSW, pinX, pinY);
-GameEngine game = GameEngine();
-Matrix matrix = Matrix(dinPin, clockPin, loadPin);
-
 
 void setupRun() 
 {

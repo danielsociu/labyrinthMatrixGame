@@ -355,29 +355,3 @@ bool MapEngine::checkIntersectionWithExit(Entity* entity)
 {
     return this->currentRenderedRoom->isOnExit(entity->getX(), entity->getY());
 }
-
-
-/* void MapEngine::drawEnemy(byte x, byte y) */
-/* { */
-/*   currentRenderedRoom->drawPosition(x, y); */
-/* } */
-
-
-
-//void Map::generateGameMap()
-//{
-//  int difficulty = game.getSettingsState()->getDifficulty() + 1;
-//  short directionX[4] = {0, 1, 0, -1};
-//  short directionY[4] = {-1, 0, 1, 0};
-//  actualLength = mapLength * difficulty;
-//  gameMap = (Room**)malloc(actualLength * (sizeof(Room*)));
-//  for (byte i = 0; i < actualLength; i++)
-//  {
-//    gameMap[i] = (Room*)malloc(sizeof(Room) * actualLength); 
-//    for (byte j = 0; j < actualLength; j++)
-//      {
-//      gameMap[i][j] = Room();
-//      
-//    }
-//  }
-//}

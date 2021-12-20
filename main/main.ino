@@ -1,21 +1,6 @@
 #include "Config.h"
 #include "GameEngine.h"
 
-// TODO: Change contrast resistor to 1k
-// TODO: Add in SettingsStates if(change) for SettingsMatrixBrightnessState (after adding matrix)
-// TODO: Add resetHighscores in settings
-// TODO: add writeEEPROM in HighscoresState
-
-//12345678
-//#### 
-//#**#
-//#**#
-//#*##
-//#*## ####
-//#**1 #**#
-//#**0 ****
-//#01# ####
-
 void setup()
 {
     setupRun();

@@ -35,10 +35,6 @@ void Matrix::lightMatrix()
 
 void Matrix::drawX()
 {
-//    byte xPixelArt[8] =
-//    {
-//        0xC3, 0xE7, 0x7E, 0x3C, 0x3C, 0x7E, 0xE7, 0xC3
-//    };
     for (byte row = 0; row < matrixSize; ++row) 
     {
         ledControl->setRow(0, row, xPixelArt[row]);

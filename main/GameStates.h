@@ -25,27 +25,27 @@ class IntroState : public State
 
 class MenuState : public State
 {
-    public:
-        static constexpr char newGameText[9] = "New Game";
-        static constexpr char highscoresText[11] = "Highscores";
-        static constexpr char settingsText[9] = "Settings";
-        static constexpr char aboutText[6] = "About";
+    // public:
+    //     static constexpr char newGameText[9] = "New Game";
+    //     static constexpr char highscoresText[11] = "Highscores";
+    //     static constexpr char settingsText[9] = "Settings";
+    //     static constexpr char aboutText[6] = "About";
     private:
-        int line;
-        int selectedLine;
-        int optionsCount;
+        byte line;
+        byte oldSelectedLine;
+        byte selectedLine;
+        byte optionsCount;
 
-        const int selectedPosition = 2; // the position of the > selection
+        const short selectedPosition = 2; // the position of the > selection
         char selectedCharacter = '>';
-        const int padding = 4;  
+        const byte padding = 4;  
         unsigned long startTime;
-        int pressDelay = 300;
+        short pressDelay = 300;
 
-        const char ** displayMap;
+        // const char ** displayMap;
         enum menuOptions
         {
             newGame,
-            //    Continue,
             highscores,
             settings,
             about,
@@ -58,6 +58,9 @@ class MenuState : public State
         virtual void updateState() override;
         virtual void onEntry() override;
         virtual void onExit() override;
+    private:
+        void printMenuLine(byte line);
+
 };
 
 
@@ -105,6 +108,10 @@ class GameState : public State
         short totalRoomsToVisit;
         unsigned long gameFinishedTime;
         unsigned long newHighscoreTime;
+        short roomsScore;
+        short enemyScore;
+        short timeScore;
+        short winScore;
 
     public:
         GameState();
@@ -134,7 +141,8 @@ class HighscoresState : public State
         const byte secondSegmentSize = 4;  // storing the score
         char **highscoresNames;
         int *highscoresScores;
-
+        
+        byte oldLine;
         byte line;
         const byte padding = 0;
         unsigned long startTime;
@@ -165,12 +173,13 @@ class SettingsState : public State
     public:
         static constexpr byte maxDifficulty = 5;
     private:
-        static constexpr char playerNameText[5] = "Name";
-        static constexpr char difficultyText[11] =  "Difficulty";
-        static constexpr char contrastLevelText[9] = "Contrast";
-        static constexpr char ledBrightnessLevelText[11] = "Brightness";
-        static constexpr char matrixBrightnessLevelText[12] = "Map Bright.";
-        static constexpr char backText[8] = "Back <<";
+        // static constexpr char playerNameText[5] = "Name";
+        // static constexpr char difficultyText[11] =  "Difficulty";
+        // static constexpr char contrastLevelText[9] = "Contrast";
+        // static constexpr char ledBrightnessLevelText[11] = "Brightness";
+        // static constexpr char matrixBrightnessLevelText[12] = "Map Bright.";
+        // static constexpr char backText[8] = "Back <<";
+        byte oldSelectedLine;
         byte line;
         byte selectedLine;
 
@@ -183,7 +192,7 @@ class SettingsState : public State
         char selectedCharacter = '>';
         const byte padding = 4;
 
-        const char **displayMap;
+        // const char **displayMap;
 
         // menu setters
         SettingsNameState *settingsNameState;
@@ -239,6 +248,8 @@ class SettingsState : public State
         SettingsLedBrightnessState* getSettingsLedBrightnessState() const;
         SettingsMatrixBrightnessState* getSettingsMatrixBrightnessState() const;
         //  int getMatrixBrightnessLevel();
+    private:
+        void printMenuLine(byte line);
 };
 
 class AboutState: public State

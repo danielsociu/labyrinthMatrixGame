@@ -6,11 +6,13 @@
 #include "Joystick.h"
 #include "GameEngine.h"
 #include "Matrix.h"
+#include "Buzzer.h"
 
 extern LiquidCrystal lcd;
 extern Joystick joystick;
 extern GameEngine game;
 extern Matrix matrix;
+extern Buzzer buzzer;
 extern const short stringLength;
 extern const short screenLength;
 extern const char defaultUsername[];

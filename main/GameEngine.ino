@@ -73,8 +73,3 @@ void GameEngine::gameLoop()
     joystick.readValues();
     currentState->updateState();
 }
-
-// GameState* GameEngine::currentState()
-// {
-//     return this->currentState;
-// }

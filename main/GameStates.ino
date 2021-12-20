@@ -44,10 +44,10 @@ void IntroState::onExit()
 
 // Menu State *******************************************
 
-constexpr char MenuState::newGameText[];
-constexpr char MenuState::highscoresText[];
-constexpr char MenuState::settingsText[];
-constexpr char MenuState::aboutText[];
+// constexpr char MenuState::newGameText[];
+// constexpr char MenuState::highscoresText[];
+// constexpr char MenuState::settingsText[];
+// constexpr char MenuState::aboutText[];
 
 MenuState::MenuState() 
 {
@@ -60,12 +60,11 @@ MenuState::MenuState()
 void MenuState::onEntry()
 {
     startTime = millis();
-
-    displayMap = (const char**)malloc(sizeof(const char*) * this->optionsCount);
-    displayMap[menuOptions::newGame]    = newGameText;
-    displayMap[menuOptions::highscores] = highscoresText;
-    displayMap[menuOptions::settings]   = settingsText;
-    displayMap[menuOptions::about]      = aboutText;
+    // displayMap = (const char**)malloc(sizeof(const char*) * this->optionsCount);
+    // displayMap[menuOptions::newGame]    = newGameText;
+    // displayMap[menuOptions::highscores] = highscoresText;
+    // displayMap[menuOptions::settings]   = settingsText;
+    // displayMap[menuOptions::about]      = aboutText;
 
     this->updateDisplay();
 }
@@ -84,14 +83,17 @@ void MenuState::updateDisplay()
     lcd.print(selectedCharacter);
 
     lcd.setCursor(padding, 0);
-    lcd.print(*(displayMap + line));
+    printMenuLine(line);
+    // lcd.print(*(displayMap + line));
+
     lcd.setCursor(padding, 1);
-    lcd.print(*(displayMap + (line + 1)));
+    printMenuLine(line + 1);
+    // lcd.print(*(displayMap + (line + 1)));
 }
 
 void MenuState::updateState() 
 {
-    int oldSelectedLine = selectedLine;
+    oldSelectedLine = selectedLine;
     if (debouncer(startTime, pressDelay) && joystick.isPressed())
     {
         switch (selectedLine)
@@ -137,8 +139,29 @@ void MenuState::updateState()
 
 void MenuState::onExit()
 {
-    free(displayMap);
+//    free(displayMap);
     lcd.clear();
+}
+
+void MenuState::printMenuLine(byte line)
+{
+    switch(line)
+    {
+        case menuOptions::newGame:
+            lcd.print(F("New Game"));
+            break;
+        case menuOptions::highscores:
+            lcd.print(F("Highscores"));
+            break;
+        case menuOptions::settings:
+            lcd.print(F("Settings"));
+            break;
+        case menuOptions::about:
+            lcd.print(F("About"));
+            break;
+        default:
+            break;
+    }
 }
 
 // Game State **********************************************
@@ -174,6 +197,7 @@ void GameState::onEntry()
     totalRoomsToVisit = Player::minimumRoomsVisited + Player::minimumRoomsVisitedMultiplier * game.getSettingsState()->getDifficulty();
     mapEngine->drawEntity(player);
 
+    buzzer.startThemeSong();
     this->updateMatrix();
     this->updateDisplay();
 }
@@ -193,10 +217,10 @@ void GameState::onGameFinished()
 
 void GameState::calculateScore()
 {
-    short roomsScore = player->getRoomsVisited() * roomScoreReward;
-    short enemyScore = player->getEnemiesKilled() * (enemyKillReward + game.getSettingsState()->getDifficulty() * enemyKillRewardMultiplier);
-    short timeScore = 0;
-    short winScore = 0;
+    roomsScore = player->getRoomsVisited() * roomScoreReward;
+    enemyScore = player->getEnemiesKilled() * (enemyKillReward + game.getSettingsState()->getDifficulty() * enemyKillRewardMultiplier);
+    timeScore = 0;
+    winScore = 0;
     if (gameFinished)
     {
         if (escaped)
@@ -307,6 +331,7 @@ void GameState::updateState()
 {
     if (!gameFinished)
     {
+        buzzer.startThemeSong();
         option = (millis() / (optionTimer * optionsCount)) % optionsCount;
         if (option != lastOption) {
           lastOption = option;
@@ -572,7 +597,7 @@ void HighscoresState::updateDisplay()
 
 void HighscoresState::updateState()
 {
-    int oldLine = line;
+    oldLine = line;
     if (debouncer(startTime, finishDelay) && joystick.isPressed())
     {
         game.changeState(GameStateList::MenuState); 
@@ -624,9 +649,9 @@ void HighscoresState::readEEPROM(byte position, char* name, int* score)
 }
 void HighscoresState::writeEEPROM(const char* name, int score)
 {
-    int position = 0;
+    byte position = 0;
     int initialScore = score;
-    for (int i = 0; i < numberOfSegments; ++i)
+    for (byte i = 0; i < numberOfSegments; ++i)
     {
         if (highscoresScores[i] <= score)
         {
@@ -634,9 +659,9 @@ void HighscoresState::writeEEPROM(const char* name, int score)
             break;
         }
     }
-    for (int i = numberOfSegments - 1; i > position; --i)
+    for (byte i = numberOfSegments - 1; i > position; --i)
     {
-        int padding = i * segmentsSize;
+        byte padding = i * segmentsSize;
         for (int j = 0; j < segmentsSize; ++j)
         {
             byte value = EEPROM.read(padding + j - segmentsSize);
@@ -645,8 +670,8 @@ void HighscoresState::writeEEPROM(const char* name, int score)
         highscoresScores[i] = highscoresScores[i - 1];
         strcpy(highscoresNames[i], highscoresNames[i - 1]);
     }
-    int padding = position * segmentsSize;
-    for (int i = padding; i < padding + firstSegmentSize; ++i )
+    byte padding = position * segmentsSize;
+    for (byte i = padding; i < padding + firstSegmentSize; ++i )
     {
         if (name[i - padding] == '\0')
         {
@@ -654,7 +679,7 @@ void HighscoresState::writeEEPROM(const char* name, int score)
         }
         EEPROM.update(i ,(byte)name[i - padding]);
     }
-    for (int i = padding + firstSegmentSize; i < padding + segmentsSize; ++i)
+    for (byte i = padding + firstSegmentSize; i < padding + segmentsSize; ++i)
     {
         if (score == 0)
         {
@@ -669,7 +694,7 @@ void HighscoresState::writeEEPROM(const char* name, int score)
 
 bool HighscoresState::checkNewHighscore(int score)
 {
-    for (int i = 0; i < numberOfSegments; ++i)
+    for (byte i = 0; i < numberOfSegments; ++i)
     {
         if (highscoresScores[i] <= score)
         {
@@ -680,12 +705,12 @@ bool HighscoresState::checkNewHighscore(int score)
 }
 
 // Settings State ****************************************
-constexpr char SettingsState::playerNameText[];
-constexpr char SettingsState::difficultyText[];
-constexpr char SettingsState::contrastLevelText[];
-constexpr char SettingsState::ledBrightnessLevelText[];
-constexpr char SettingsState::matrixBrightnessLevelText[];
-constexpr char SettingsState::backText[];
+// constexpr char SettingsState::playerNameText[];
+// constexpr char SettingsState::difficultyText[];
+// constexpr char SettingsState::contrastLevelText[];
+// constexpr char SettingsState::ledBrightnessLevelText[];
+// constexpr char SettingsState::matrixBrightnessLevelText[];
+// constexpr char SettingsState::backText[];
 
 SettingsState::SettingsState()
 {
@@ -718,14 +743,13 @@ void SettingsState::onEntry()
 {
     lcd.clear();
     startTime = millis();
-
-    displayMap = (const char**)malloc(sizeof(char*) * this->optionsCount);
-    displayMap[settingsOptions::playerNameOption]             = playerNameText;
-    displayMap[settingsOptions::difficultyOption]             = difficultyText;
-    displayMap[settingsOptions::contrastLevelOption]          = contrastLevelText;
-    displayMap[settingsOptions::ledBrightnessLevelOption]     = ledBrightnessLevelText;
-    displayMap[settingsOptions::matrixBrightnessLevelOption]  = matrixBrightnessLevelText;
-    displayMap[settingsOptions::backOption]                   = backText;
+    // displayMap = (const char**)malloc(sizeof(char*) * this->optionsCount);
+    // displayMap[settingsOptions::playerNameOption]             = playerNameText;
+    // displayMap[settingsOptions::difficultyOption]             = difficultyText;
+    // displayMap[settingsOptions::contrastLevelOption]          = contrastLevelText;
+    // displayMap[settingsOptions::ledBrightnessLevelOption]     = ledBrightnessLevelText;
+    // displayMap[settingsOptions::matrixBrightnessLevelOption]  = matrixBrightnessLevelText;
+    // displayMap[settingsOptions::backOption]                   = backText;
 
     this->updateDisplay();
 }
@@ -744,14 +768,17 @@ void SettingsState::updateDisplay()
     lcd.print(selectedCharacter);
 
     lcd.setCursor(padding, 0);
-    lcd.print(*(displayMap + line));
+    printMenuLine(line);
+    // lcd.print(*(displayMap + line));
+
     lcd.setCursor(padding, 1);
-    lcd.print(*(displayMap + (line + 1)));
+    printMenuLine(line + 1);
+    // lcd.print(*(displayMap + (line + 1)));
 }
 
 void SettingsState::updateState()
 {
-    byte oldSelectedLine = selectedLine;
+    oldSelectedLine = selectedLine;
     joystick.onceMovedChecker();
     if (joystick.onceMoveUp() && selectedLine > 0)
     {
@@ -805,8 +832,33 @@ void SettingsState::updateState()
 
 void SettingsState::onExit()
 {
-    free(displayMap);
+//    free(displayMap);
     lcd.clear();
+}
+
+void SettingsState::printMenuLine(byte line)
+{
+    switch(line)
+    {
+        case settingsOptions::playerNameOption:
+            lcd.print(F("Name"));
+            break;
+        case settingsOptions::difficultyOption:
+            lcd.print(F("Difficulty"));
+            break;
+        case settingsOptions::contrastLevelOption:
+            lcd.print(F("Contrast"));
+            break;
+        case settingsOptions::ledBrightnessLevelOption:
+            lcd.print(F("Brightness"));
+            break;
+        case settingsOptions::matrixBrightnessLevelOption:
+            lcd.print(F("Map Bright."));
+            break;
+        case settingsOptions::backOption:
+            lcd.print(F("Back <<"));
+            break;
+    }
 }
 
 // getters
