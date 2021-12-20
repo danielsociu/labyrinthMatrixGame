@@ -18,6 +18,7 @@ public:
   void lightMatrix();
   void clearMatrix();
   void updateMatrix(RenderedRoom* renderedRoom);
-  void drawGameover();
+  void drawX();
+  void drawHappyFace();
   void writeMatrixBrightness(short value);
 };

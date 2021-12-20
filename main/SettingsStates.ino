@@ -160,7 +160,7 @@ void SettingsDifficultyState::updateState()
   }
   if (joystick.onceMoveRight()) 
   {
-    currentDifficulty = min(currentDifficulty + 1, maxDifficulty - 1);
+    currentDifficulty = min(currentDifficulty + 1, SettingsState::maxDifficulty - 1);
     change = true;
   }
   if (change) 

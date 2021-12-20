@@ -147,6 +147,9 @@ void GameState::onEntry()
 
   mapEngine = new MapEngine();
   player = new Player(matrix.getMatrixSize() / 2 - 1, matrix.getMatrixSize() / 2 - 1);
+  enemy = new Enemy();
+  totalEnemiesToKill = Player::minimumEnemiesKilled + Player::minimumEnemiesKilledMultiplier * game.getSettingsState()->getDifficulty();
+  totalRoomsToVisit = Player::minimumRoomsVisited + Player::minimumRoomsVisitedMultiplier * game.getSettingsState()->getDifficulty();
   mapEngine->drawEntity(player);
   
   this->updateMatrix();
@@ -176,9 +179,11 @@ void GameState::calculateScore()
   short roomsScore = player->getRoomsVisited() * roomScoreReward;
   short enemyScore = player->getEnemiesKilled() * (enemyKillReward + game.getSettingsState()->getDifficulty() * enemyKillRewardMultiplier);
   short timeScore = 0;
+  short winScore = 0;
   if (gameFinished) {
     if (escaped) {
       timeScore = min((gameFinishedTime - startTime) / 1000, timeScoreLimit);
+      winScore = (game.getSettingsState()->getDifficulty() + 1) * winScoreReward;
     } else {
       timeScore = min((gameFinishedTime - startTime) / 1000, timeScoreLimit) / 10;
     }
@@ -196,13 +201,28 @@ void GameState::gameoverDisplay()
   lcd.print(this->score);
 }
 
+void GameState::gamewonDisplay()
+{
+  lcd.clear();
+  lcd.setCursor(2, 0);
+  lcd.print("You got away!");
+  lcd.setCursor(2, 1);
+  lcd.print("Score: ");
+  lcd.print(this->score);
+}
+
 void GameState::gameoverMatrix()
 {
-  matrix.drawGameover();
+  matrix.drawX();
+}
+
+void GameState::gamewonMatrix()
+{
+  matrix.drawHappyFace();
 }
 
 void GameState::updateDisplay() 
-{
+{ 
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print(game.getSettingsState()->getPlayerName());
@@ -211,8 +231,13 @@ void GameState::updateDisplay()
   lcd.setCursor(screenLength - 3, 0);
   lcd.print(player->getHealth());
   lcd.setCursor(0, 1);
-  lcd.print("Score:");
-  lcd.print(this->score);
+  lcd.print(totalEnemiesToKill - player->getEnemiesKilled());
+  lcd.print(";");
+  lcd.print(totalRoomsToVisit - player->getRoomsVisited());
+  lcd.print(";");
+  lcd.print(mapEngine->getRender()->getExitRoad());
+//  lcd.print("Score:");
+//  lcd.print(this->score);
   if (mapEngine->getRender()->getEnemy()) {
     lcd.setCursor(screenLength - 5, 1);
     lcd.write(byte(2));
@@ -263,12 +288,15 @@ void GameState::updateState()
           if (mapEngine->checkPositionEmpty(player) || (!mapEngine->checkPositionEmpty(player) && (crossedX || crossedY))) {
             if (crossedX || crossedY) {
               // Generate new room
-              mapEngine->generateNewRandomRoom(player->getDirection());
+              if ((totalEnemiesToKill - player->getEnemiesKilled() <= 0) && (totalRoomsToVisit - player->getRoomsVisited()  <= 0)) {
+                mapEngine->generateNewRandomRoom(player->getDirection(), true);
+              } else {
+                mapEngine->generateNewRandomRoom(player->getDirection(), false);
+              }
               player->increaseRoomsVisited();
               this->calculateScore();
               if (mapEngine->getRender()->getEnemy()) {
-                delete enemy;
-                enemy = new Enemy();
+                enemy->resetEnemy();
               }
               this->updateDisplay();
             }
@@ -276,6 +304,12 @@ void GameState::updateState()
 
   //          player->setPlayerAttacked(false);
           } else {
+            if (mapEngine->checkIntersectionWithExit(player)) {
+              this->onGameFinished();
+              gamewonDisplay();
+              gamewonMatrix();
+              return;
+            }
             player->setX(initialX);
             player->setY(initialY);
           }   
@@ -330,7 +364,6 @@ void GameState::updateState()
           mapEngine->getRender()->setEnemy(false);
           player->increaseEnemiesKilled();
           this->calculateScore();
-          delete enemy;
         }
         this->updateDisplay();
       }

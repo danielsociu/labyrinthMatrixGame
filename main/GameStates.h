@@ -1,6 +1,6 @@
 #pragma once
 #include "Config.h"
-#include "GameState.h"
+#include "State.h"
 #include "SettingsStates.h"
 #include "Map.h"
 #include "Entities.h"
@@ -65,6 +65,7 @@ public:
   static constexpr short enemyKillReward = 10;
   static constexpr short enemyKillRewardMultiplier = 10;
   static constexpr short timeScoreLimit = 1000;
+  static constexpr short winScoreReward = 200;
 private:
   bool gameFinished;
   short score;
@@ -74,6 +75,8 @@ private:
   Player* player;
   Enemy* enemy;
   bool escaped;
+  short totalEnemiesToKill;
+  short totalRoomsToVisit;
   unsigned long gameFinishedTime;
   const short gameFinishedTimer = 300;
 
@@ -87,6 +90,8 @@ public:
   void gameoverMatrix();
   void onGameFinished();
   void calculateScore();
+  void gamewonDisplay();
+  void gamewonMatrix();
   virtual void updateDisplay() override;
   virtual void updateState() override;
   virtual void onEntry() override;
@@ -128,18 +133,22 @@ public:
 
 class SettingsState : public State
 {
+public:
+  static constexpr byte maxDifficulty = 5;
+private:
   static constexpr char playerNameText[5] = "Name";
   static constexpr char difficultyText[11] =  "Difficulty";
   static constexpr char contrastLevelText[9] = "Contrast";
   static constexpr char ledBrightnessLevelText[11] = "Brightness";
   static constexpr char matrixBrightnessLevelText[12] = "Map Bright.";
   static constexpr char backText[8] = "Back <<";
-private:
   byte line;
   byte selectedLine;
 
   unsigned long startTime;
   short pressDelay = 300;
+  short totalEnemiesToKill;
+  short totalRoomsToVisit;
 
   const byte selectedPosition = 2; // the position of the > selection
   char selectedCharacter = '>';

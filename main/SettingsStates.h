@@ -38,7 +38,6 @@ private:
   
   SettingsState *settingsState;
   short currentDifficulty;
-  const short maxDifficulty = 5;
 public:
   SettingsDifficultyState(SettingsState*);
   virtual void updateDisplay() override;

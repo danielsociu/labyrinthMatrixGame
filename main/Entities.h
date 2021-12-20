@@ -31,6 +31,7 @@ public:
   bool isDamaged();
   void setDamaged(bool damaged);
   bool isAlive();
+  void setAlive(bool alive);
   void takeDamage(short damage);
   virtual short dealDamage() = 0;
   virtual const short* getAttackX() = 0;
@@ -47,6 +48,10 @@ public:
   static constexpr short attackDelay = 500;
   static constexpr short attackDuration = 300;
   static constexpr short defaultHealth = 100;
+  static constexpr short minimumEnemiesKilled = 3;
+  static constexpr short minimumEnemiesKilledMultiplier = 2;
+  static constexpr short minimumRoomsVisited = 15;
+  static constexpr short minimumRoomsVisitedMultiplier = 10;
   static constexpr short attackXVector[directionsCount][attackRange] = {
     {-1, -1, -1},
     {-1, 0, 1},
@@ -62,9 +67,9 @@ public:
 private:
   
   byte direction;
-  unsigned long *lastMoved;
-  unsigned long *lastAttack;
-  unsigned long *attacking;
+  unsigned long lastMoved;
+  unsigned long lastAttack;
+  unsigned long attacking;
   short enemiesKilled;
   short roomsVisited;
   bool playerAttacked;
@@ -114,12 +119,15 @@ public:
   static constexpr short attackMultiplier = 10;
   
 private:
-  unsigned long *lastAttack;
+  unsigned long lastAttack;
 public:
   void init();
   Enemy();
   Enemy(byte x, byte y, short health);
   virtual ~Enemy();
+  byte getRandomPos();
+  short getSpawnHealth();
+  void resetEnemy();
   void setLastAttack(unsigned long lastAttack);
   unsigned long getLastAttack();
   virtual short dealDamage() override;

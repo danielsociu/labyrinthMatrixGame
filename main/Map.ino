@@ -1,22 +1,6 @@
 #include "Map.h"
 
-Room::Room() 
-{
-  road = B0;
-}
-
-Room::Room(byte road) 
-{
-  this->road = road;
-}
-
-Room::Room(byte road, bool hasEnemy) 
-{
-  this->road = road;
-  this->hasEnemy = hasEnemy;
-}
-
-Room::Room(byte road, bool hasEnemy, bool hasExit) 
+Room::Room(byte road, bool hasEnemy = 0, bool hasExit = 0) 
 {
   this->road = road;
   this->hasEnemy = hasEnemy;
@@ -35,6 +19,17 @@ void Room::changeRoad(byte movement, byte value)
   road = road | current;
 }
 
+void Room::changeExitRoad(byte movement, byte value)
+{
+  exitRoad = B0;
+  exitRoad = value << (movement * 2);
+}
+
+void Room::setExitDirection(byte exitDirection)
+{
+  this->exitDirection = exitDirection;
+}
+
 bool Room::getEnemy()
 {
   return hasEnemy;
@@ -43,6 +38,16 @@ bool Room::getEnemy()
 bool Room::getExit()
 {
   return hasExit;
+}
+
+byte Room::getExitRoad()
+{
+  return (road >> (exitDirection * 2)) & B11;
+}
+
+byte Room::getExitDirection()
+{
+  return exitDirection;
 }
 
 void Room::setRoad(byte road)
@@ -85,21 +90,6 @@ RenderedRoom::RenderedRoom(byte road, bool hasEnemy, bool hasExit) : Room(road, 
   this->renderedRoom = (byte*)(malloc(sizeof(byte) * renderedRoomLength));
 }
 
-RenderedRoom::RenderedRoom(byte road, bool hasEnemy) : Room(road, hasEnemy)
-{
-  this->renderedRoom = (byte*)(malloc(sizeof(byte) * renderedRoomLength));
-}
-
-RenderedRoom::RenderedRoom(byte road) : Room(road)
-{
-  this->renderedRoom = (byte*)(malloc(sizeof(byte) * renderedRoomLength));
-}
-
-
-RenderedRoom::RenderedRoom()
-{
-  this->renderedRoom = (byte*)(malloc(sizeof(byte) * renderedRoomLength));
-}
 
 RenderedRoom::~RenderedRoom()
 {
@@ -143,6 +133,28 @@ void RenderedRoom :: renderRoom()
       renderedRoom[i * 2 + 1]  = B11000011;
     }
   }
+  // TODO: Add exit
+  if (this->hasExit) {
+    byte curExitRoad = this->getExitRoad();
+    switch(exitDirection) {
+      case up:
+        renderedRoom[0] |= (B11 << ((curExitRoad ^ B11) * 2));
+        break;
+      case right:
+        renderedRoom[curExitRoad * 2] |= 1;
+        renderedRoom[curExitRoad * 2 + 1] |= 1;
+        break;
+      case down:
+        renderedRoom[7] |= (B11 << ((curExitRoad ^ B11) * 2));
+        break;
+      case left:
+        renderedRoom[curExitRoad * 2] |= (1 << 7);
+        renderedRoom[curExitRoad * 2 + 1] |= (1 << 7);
+        break;
+      default:
+        break;
+    }
+  }
 }
 
 bool RenderedRoom::getPosition(byte x, byte y)
@@ -165,6 +177,22 @@ RenderedRoom* MapEngine::getRender()
   return this->currentRenderedRoom;
 }
 
+bool RenderedRoom::isOnExit(byte x, byte y)
+{
+  if (hasExit == false) {
+    return false;
+  }
+  if ((exitDirection == up && x == 0) || (exitDirection == down && x == 7)) {
+    byte curExitRoad = this->getExitRoad();
+    return (y <= ((curExitRoad ^ B11) + 1) && (curExitRoad ^ B11) <= y);
+  }
+  if ((exitDirection == right && y == 0) || (exitDirection == left && y == 7)) {
+    byte curExitRoad = this->getExitRoad();
+    return (x <= (curExitRoad * 2 + 1) && (curExitRoad * 2) <= x);
+  }
+  return false;
+}
+
 MapEngine::MapEngine()
 {
   byte road = generateRandomRoad();
@@ -181,10 +209,11 @@ byte MapEngine::generateRandomRoad()
   return road;
 }
 
-void MapEngine::generateNewRandomRoom(byte direction) {
+void MapEngine::generateNewRandomRoom(byte direction, bool exitSpawnable = false) {
   byte difficulty = game.getSettingsState()->getDifficulty();
   byte value = currentRenderedRoom->getRoad(direction);
   bool hasEnemy = false;
+  bool hasExit = false;
   direction = direction ^ B10;
   this->currentRenderedRoom->setRoad(0);
   this->currentRenderedRoom->changeRoad(direction, value);
@@ -197,6 +226,25 @@ void MapEngine::generateNewRandomRoom(byte direction) {
   if (random(100) < (Enemy::spawnChance + difficulty * Enemy::spawnMultiplier)) {
     hasEnemy = true;
   }
+  if (exitSpawnable) {
+    if (random(100) < Room::exitSpawnChance + (Room::exitSpawnChanceMultiplier * (SettingsState::maxDifficulty - difficulty - 1)))
+    {
+      hasExit = true;
+      byte exitDirection = random(directionsCount);
+      if (exitDirection == direction) {
+        exitDirection = exitDirection ^ B11;
+      }
+      if (!this->currentRenderedRoom->getRoad(exitDirection)) {
+        byte randomGate = 1 + random(2);
+        this->currentRenderedRoom->changeExitRoad(exitDirection, randomGate);
+        this->currentRenderedRoom->changeRoad(exitDirection, randomGate);
+      } else {
+        this->currentRenderedRoom->changeExitRoad(exitDirection, this->currentRenderedRoom->getRoad(exitDirection));
+      }
+      this->currentRenderedRoom->setExitDirection(exitDirection);
+    }
+  }
+  this->currentRenderedRoom->setExit(hasExit);
   this->currentRenderedRoom->setEnemy(hasEnemy);
 }
 
@@ -270,6 +318,11 @@ bool MapEngine::checkInRangeOfAttack(Entity* attacker, Entity* checked)
 void MapEngine::renderMap()
 {
   currentRenderedRoom->renderRoom();
+}
+
+bool MapEngine::checkIntersectionWithExit(Entity* entity) 
+{
+  return this->currentRenderedRoom->isOnExit(entity->getX(), entity->getY());
 }
 
 

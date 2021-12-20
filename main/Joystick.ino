@@ -2,7 +2,7 @@
 #include "Config.h"
 
 
-Joystick::Joystick(int pinSW, int pinX, int pinY) {
+Joystick::Joystick(byte pinSW, byte pinX, byte pinY) {
   this->pinSW = pinSW;
   this->pinX = pinX;
   this->pinY = pinY;

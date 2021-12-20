@@ -127,6 +127,11 @@ bool Entity::isAlive()
   return this->alive;
 }
 
+void Entity::setAlive(bool alive)
+{
+  this->alive = alive;
+}
+
 void Entity::takeDamage(short damage)
 {
   this->health -= damage;
@@ -146,11 +151,8 @@ constexpr short Player::attackYVector[directionsCount][attackRange];
 
 void Player::init()
 {
-  lastMoved = (unsigned long*)malloc(sizeof(unsigned long));
-  lastAttack = (unsigned long*)malloc(sizeof(unsigned long));
-  attacking = (unsigned long*)malloc(sizeof(unsigned long));
-  *lastMoved = millis();
-  *lastAttack = millis();
+  lastMoved = millis();
+  lastAttack = millis();
   enemiesKilled = 0;
   roomsVisited = 1;
 }
@@ -167,9 +169,7 @@ Player::Player(byte x, byte y, short health): Entity(x, y, health)
 
 Player::~Player()
 {
-  free(lastMoved);
-  free(lastAttack);
-  free(attacking);
+
 }
 
 void Player::setDirection(byte direction)
@@ -184,32 +184,32 @@ byte Player::getDirection()
 
 unsigned long Player::getLastMoved()
 {
-  return *lastMoved;
+  return lastMoved;
 }
 
 void Player::setLastMoved(unsigned long lastMoved)
 {
-  *this->lastMoved = lastMoved;
+  this->lastMoved = lastMoved;
 }
 
 void Player::setLastAttack(unsigned long lastAttack)
 {
-  *this->lastAttack = lastAttack;
+  this->lastAttack = lastAttack;
 }
 
 unsigned long Player::getLastAttack()
 {
-  return *this->lastAttack;
+  return this->lastAttack;
 }
 
 void Player::setAttacking(unsigned long attacking)
 {
-  *this->attacking = attacking;
+  this->attacking = attacking;
 }
 
 unsigned long Player::getAttacking()
 {
-  return *this->attacking;
+  return this->attacking;
 }
 
 void Player::setPlayerAttacked(bool playerAttacked)
@@ -267,11 +267,10 @@ constexpr short Enemy::attackYVector[];
 
 void Enemy::init()
 {
-  lastAttack = (unsigned long*)malloc(sizeof(unsigned long));
-  *lastAttack = millis();
+  lastAttack = millis();
 }
 
-Enemy::Enemy() : Entity (2 + random(3), 2 + random(3), Enemy::defaultHealth + (game.getSettingsState()->getDifficulty() * Enemy::healthMultiplier))
+Enemy::Enemy() : Entity (getRandomPos(), getRandomPos(), getSpawnHealth())
 {
   init();
 }
@@ -284,17 +283,34 @@ Enemy::Enemy(byte x, byte y, short health) : Entity(x, y, health)
 
 Enemy::~Enemy()
 {
-  free(lastAttack);
+}
+
+byte Enemy::getRandomPos()
+{
+  return 2 + random(3);
+}
+
+short Enemy::getSpawnHealth()
+{
+  return Enemy::defaultHealth + (game.getSettingsState()->getDifficulty() * Enemy::healthMultiplier);
+}
+
+void Enemy::resetEnemy()
+{
+  this->setX(getRandomPos());
+  this->setY(getRandomPos());
+  this->setHealth(getSpawnHealth());
+  this->setAlive(true);
 }
 
 void Enemy::setLastAttack(unsigned long lastAttack)
 {
-  *this->lastAttack = lastAttack;
+  this->lastAttack = lastAttack;
 }
 
 unsigned long Enemy::getLastAttack()
 {
-  return *this->lastAttack;
+  return this->lastAttack;
 }
 
 short Enemy::dealDamage()

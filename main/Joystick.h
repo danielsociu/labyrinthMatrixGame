@@ -1,23 +1,24 @@
 #pragma once
+
 class Joystick
 {
 private:
-  int pinSW;
-  int pinX;
-  int pinY;
+  byte pinSW;
+  byte pinX;
+  byte pinY;
 
-  int xValue;
-  int yValue;
+  short xValue;
+  short yValue;
   bool buttonState = true;
   bool lastButtonState;
   unsigned long lastDebounceTime;  
-  unsigned int debounceDelay = 50;
+  byte debounceDelay = 50;
 
   bool moved = false;
-  int moveThreshold = 256;
-  int defaultValue = 512;
+  short moveThreshold = 256;
+  short defaultValue = 512;
 public:
-  Joystick(int, int, int);
+  Joystick(byte, byte, byte);
   void readValues();
   bool isPressed();
   void onceMovedChecker();
