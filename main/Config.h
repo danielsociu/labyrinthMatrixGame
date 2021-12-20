@@ -11,12 +11,13 @@ extern LiquidCrystal lcd;
 extern Joystick joystick;
 extern GameEngine game;
 extern Matrix matrix;
-extern short stringLength;
-extern short screenLength;
-extern short defaultDifficulty;
-extern short defaultContrast;
-extern short defaultLedBrightness;
-extern short defaultMatrixBrightness;
+extern const short stringLength;
+extern const short screenLength;
+extern const char defaultUsername[];
+extern const short defaultDifficulty;
+extern const short defaultContrast;
+extern const short defaultLedBrightness;
+extern const short defaultMatrixBrightness;
 
 void setupRun();
 

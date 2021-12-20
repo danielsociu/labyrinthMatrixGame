@@ -11,7 +11,7 @@ class Joystick
         short yValue;
         bool buttonState = true;
         bool lastButtonState;
-        unsigned long lastDebounceTime;  
+        unsigned long lastDebounceTime;
         byte debounceDelay = 50;
 
         bool moved = false;

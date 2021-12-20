@@ -143,6 +143,16 @@ void MenuState::onExit()
 
 // Game State **********************************************
 
+
+constexpr char GameState::loadingText[];
+constexpr char GameState::gameoverText[];
+constexpr char GameState::gamefinshedScoreText[];
+constexpr char GameState::gamewonText[];
+constexpr char GameState::newHighscoreText[];
+constexpr char GameState::newHighscoreSaveText[];
+constexpr char GameState::newHighscoreOption1[];
+constexpr char GameState::newHighscoreOption2[];
+
 GameState::GameState()
 {
 
@@ -177,7 +187,7 @@ void GameState::updateMatrix()
 void GameState::loadingState() 
 {
     lcd.setCursor(3, 0);
-    lcd.print("Loading...");
+    lcd.print(loadingText);
 }
 
 void GameState::onGameFinished()
@@ -211,20 +221,20 @@ void GameState::calculateScore()
 void GameState::gameoverDisplay()
 {
     lcd.clear();
-    lcd.setCursor(2, 0);
-    lcd.print("Game over!");
-    lcd.setCursor(2, 1);
-    lcd.print("Score: ");
+    lcd.setCursor(gameoverPadding, 0);
+    lcd.print(gameoverText);
+    lcd.setCursor(gameoverPadding, 1);
+    lcd.print(gamefinshedScoreText);
     lcd.print(this->score);
 }
 
 void GameState::gamewonDisplay()
 {
     lcd.clear();
-    lcd.setCursor(2, 0);
-    lcd.print("You got away!");
-    lcd.setCursor(2, 1);
-    lcd.print("Score: ");
+    lcd.setCursor(gamewonPadding, 0);
+    lcd.print(gamewonText);
+    lcd.setCursor(gamewonPadding, 1);
+    lcd.print(gamefinshedScoreText);
     lcd.print(this->score);
 }
 
@@ -232,7 +242,6 @@ void GameState::gameoverMatrix()
 {
     matrix.drawX();
 }
-
 
 void GameState::gamewonMatrix()
 {
@@ -242,20 +251,18 @@ void GameState::gamewonMatrix()
 void GameState::newHighscoreDisplay()
 {
     lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("New hi-score");
-    lcd.setCursor(0, 1);
-    lcd.print("Save:");
-    lcd.print(" ");
+    lcd.setCursor(newHighscorePadding, 0);
+    lcd.print(newHighscoreText);
+    lcd.setCursor(newHighscorePadding, 1);
+    lcd.print(newHighscoreSaveText);
     if (highscoreLine == 0)
     {
-        lcd.print(">yes  no");
+        lcd.print(newHighscoreOption1);
     } 
     else 
     {
-        lcd.print(" yes >no");
+        lcd.print(newHighscoreOption2);
     }
-
 }
 
 void GameState::updateDisplay() 
@@ -388,6 +395,10 @@ void GameState::updateState()
                         this->onGameFinished();
                         gameoverDisplay();
                         gameoverMatrix();
+                        if (game.getHighscoresState()->checkNewHighscore(this->score))
+                        {
+                            newHighscoreInit();
+                        } 
                         return;
                     }
                 }
@@ -441,9 +452,14 @@ void GameState::updateState()
                 if (this->highscoreLine == 0)
                 {
                     game.getHighscoresState()->writeEEPROM(game.getSettingsState()->getPlayerName(), this->score);
-                }
-                game.changeState(GameStateList::MenuState);
+                    game.changeState(GameStateList::HighscoresState);
+                } 
+                else 
+                {
+                    game.changeState(GameStateList::MenuState);
+                }  
             }
+            joystick.onceMovedChecker();
             if (joystick.onceMoveLeft())
             {
                 this->highscoreLine = max(0, this->highscoreLine - 1);
@@ -463,10 +479,7 @@ void GameState::updateState()
         {
             if (game.getHighscoresState()->checkNewHighscore(this->score))
             {
-                highscoreLine = 0;
-                this->newHighscoreDisplay();
-                newHighscoreTime = millis();
-                newHighscore = true;
+                newHighscoreInit();
             } 
             else
             {
@@ -475,6 +488,14 @@ void GameState::updateState()
         }
     }
 
+}
+
+void GameState::newHighscoreInit()
+{
+    highscoreLine = 0;
+    this->newHighscoreDisplay();
+    newHighscoreTime = millis();
+    newHighscore = true;
 }
 
 void GameState::onExit()
@@ -591,6 +612,7 @@ void HighscoresState::readEEPROM(byte position, char* name, int* score)
 void HighscoresState::writeEEPROM(const char* name, int score)
 {
     int position = 0;
+    int initialScore = score;
     for (int i = 0; i < numberOfSegments; ++i)
     {
         if (highscoresScores[i] <= score)
@@ -617,7 +639,7 @@ void HighscoresState::writeEEPROM(const char* name, int score)
         {
             break;
         }
-        EEPROM.update(i ,(int)name[padding - i]);
+        EEPROM.update(i ,(byte)name[i - padding]);
     }
     for (int i = padding + firstSegmentSize; i < padding + segmentsSize; ++i)
     {
@@ -628,7 +650,7 @@ void HighscoresState::writeEEPROM(const char* name, int score)
         EEPROM.update(i, score & B11111111);
         score = score >> 8;
     }
-    highscoresScores[position] = score;
+    highscoresScores[position] = initialScore;
     strcpy(highscoresNames[position], name);
 }
 
@@ -656,7 +678,7 @@ SettingsState::SettingsState()
 {
     // Setting defaults
     playerName = (char*)malloc(sizeof(char) * stringLength);
-    strcpy(playerName, "ANON");
+    strcpy(playerName, defaultUsername);
     this->difficulty = defaultDifficulty;
     this->contrastLevel = defaultContrast;
     this->ledBrightnessLevel = defaultLedBrightness;

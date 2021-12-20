@@ -17,6 +17,14 @@ const byte d5 = 3;
 const byte d6 = 2;
 const byte d7 = 1;
 
+const short stringLength = 16;
+const short defaultDifficulty = 0;
+const short defaultContrast = 30;
+const short defaultLedBrightness = 128;
+const short defaultMatrixBrightness = 3;
+const short screenLength = 16;
+const char defaultUsername[] = "ANON";
+
 byte progressBarChar[8] =
 {
     B11111,
@@ -55,12 +63,7 @@ LiquidCrystal lcd (RS, enable, d4, d5, d6, d7);
 Joystick joystick(pinSW, pinX, pinY);
 GameEngine game = GameEngine();
 Matrix matrix = Matrix(dinPin, clockPin, loadPin);
-short stringLength = 16;
-short defaultDifficulty = 1;
-short defaultContrast = 30;
-short defaultLedBrightness = 128;
-short defaultMatrixBrightness = 3;
-short screenLength = 16;
+
 
 void setupRun() 
 {
@@ -68,10 +71,10 @@ void setupRun()
     lcd.begin(screenLength, 2);
     analogWrite(contrastPin, 30);
     analogWrite(ledPin, 128);
-    // for (int i = 0; i < EEPROM.length(); ++i)
-    // {
-    //   EEPROM.update(i, 0);
-    // }
+//     for (int i = 0; i < EEPROM.length(); ++i)
+//     {
+//       EEPROM.update(i, 0);
+//     }
     lcd.createChar(0, progressBarChar);
     lcd.createChar(1, healthChar);
     lcd.createChar(2, enemyChar);

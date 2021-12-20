@@ -69,6 +69,17 @@ class GameState : public State
         static constexpr short enemyKillRewardMultiplier = 10;
         static constexpr short timeScoreLimit = 1000;
         static constexpr short winScoreReward = 200;
+        static constexpr char loadingText[11] = "Loading...";
+        static constexpr byte gameoverPadding = 3;
+        static constexpr char gameoverText[11] = "Game over!";
+        static constexpr char gamefinshedScoreText[8] = "Score: ";
+        static constexpr byte gamewonPadding = 2;
+        static constexpr char gamewonText[14] = "You got away!";
+        static constexpr byte newHighscorePadding = 0;
+        static constexpr char newHighscoreText[13] = "New hi-score";
+        static constexpr char newHighscoreSaveText[7] = "Save: ";
+        static constexpr char newHighscoreOption1[9] = ">yes  no";
+        static constexpr char newHighscoreOption2[9] = ">yes  no";
     private:
         bool gameFinished;
         int score;
@@ -100,6 +111,7 @@ class GameState : public State
         void gamewonDisplay();
         void gamewonMatrix();
         void newHighscoreDisplay();
+        void newHighscoreInit();
         virtual void updateDisplay() override;
         virtual void updateState() override;
         virtual void onEntry() override;
