@@ -1,6 +1,6 @@
 # Doomed in Led's Labyrinth <br> An labyrinth matrix game on Arduino
 
-## Description (lore) 
+### Description (lore) 
 
 Led is a crazy magician that threw you in his magic labyrinth, in which he has a lot of his minions that are trying to mercilessly kill you.  
 Led made the labyrinth such that whenever you enter a new room, he actually teleports you to a random room in the labyrinth, far away from an exit!  
@@ -38,6 +38,7 @@ The settings also has multiple tabs that can be scrolled through:
 ## Gameplay  
 
 Once you start the game the theme song will start playing, until the game finishes.  
+[Demonstration video](https://youtu.be/frGc36Ww7Q8)  
 
 #### LCD display
 
@@ -60,7 +61,6 @@ If you die along the game or if you exit successfuly, the game ends having your 
 ## Hardware
 
 The hardware is a little bit more complex, but we have some main parts:  
-
 ![Arduino_image](https://cdn.discordapp.com/attachments/902874706854682637/922812799170785280/unknown.png)  
 
 1. Joystick - used for movement/scrolling
@@ -82,14 +82,47 @@ Items used overall:
 * 1 potentiometer
 * 2 capacitators
 * 1 ceramic capacitator
-* 2 330 resistors (for lcd backlight control + the one capacitator)
+* 2 330 resistors (for lcd contrast control + the one capacitator)
+* 1 220 resistor (for lcd back-light anode)
 * 1 10k resistor (MAX7219 ISET pin)
 * a bunch of cables and arduino ports (pin ports can be found in [Config.ino](Game/Config.ino))
 
+## Code documentaiton:
 
+The [Game.ino](Game/Game.ino) starts our program logic, and it has a setupRun() which is found in [Config.ino](Game/Config.ino) and then we initialize the game with the intro state. After that we loop the game states with game.gameLoop();
+I will explain the program skeleton, refering mostly to .h files, the implementation of the .h files is in the .ino files.  
 
+### Program skeleton 
 
+* Game.ino - starts our logic
+* Config.h - holds the file configuration, (global variables and setupRun())
+* Joystick.h - defines our joystick functionality 
+* Matrix.h - manages interaction with the 8x8 matrix
+* Buzzer.h - defines our buzzer actions
+    * Pitches.h - just some macro defines for buzzer song notes
+* GameEngine.h - this is the game engine that swaps through GameStates
+* GameStates.h - this has all our main game states (GameStates inherit from GameState.h which is a abstract class)
+    * IntroState - manages the intro game state
+    * GameState -  manages our gameplay state only (when we press new game)
+        * Entities.h - this has all our entities defined, they inherit Entity abstract class
+            * Player - has our player functionality
+            * Enemy - has our enemy functionality
+        * Map.h - manages our map engine and everything about map
+            * Room - class that has minimal information about a room
+            * RenderedRoom - inherits Room, adds rendering functioality for a Room
+            * MapEngine - handles all map actions, like generating a new room, moving an entity (has a currentRenderedRoom pointer at all times on which we make modifications)
+    * MenuState - manages the menu
+    * HighscoresState - manages the highscores
+    * SettingsState - handles the SettingsState menu and has multiple SettingsStates for each setting option (SettingsStates inherit GameState.h as well)
+        * SettingsNameState - change player name state
+        * SettingsDifficultyState - change difficulty state
+        * SettingsContrastState - change contrast of lcd state
+        * SettingsLedBrightnessState - change brightness of lcd state
+        * SettingsMatrixBrightnessState - change matrix brightness state
+    * AboutState - manages the about state
 
+### Other details
 
+Physical elements (lcd, buzzer, joystick, matrix) and the whole game (GameEngine.h) are [defined globally](https://github.com/danielsociu/labyrinthMatrixGame/blob/12068440735d44c34fba2af58aa2932f7aaa1725/Game/Config.h#L11) in Config.h.
 
 
