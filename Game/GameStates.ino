@@ -434,10 +434,6 @@ void GameState::updateState()
                         this->onGameFinished();
                         gameoverDisplay();
                         gameoverMatrix();
-                        if (game.getHighscoresState()->checkNewHighscore(this->score))
-                        {
-                            newHighscoreInit();
-                        } 
                         return;
                     }
                 }
