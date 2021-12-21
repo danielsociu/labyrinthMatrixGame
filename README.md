@@ -4,7 +4,7 @@
 
 Led is a crazy magician that threw you in his magic labyrinth, in which he has a lot of his minions that are trying to mercilessly kill you.  
 Led made the labyrinth such that whenever you enter a new room, he actually teleports you to a random room in the labyrinth, far away from an exit!  
-You have to kill a lot of his minions and to make him teleport you through a lot of rooms so that his magic energy runs out and eventually get to an exit when he's too weakened and can't keep you away anymore.  
+To make his magic energy run out you have to kill a lot of his minions and to make him teleport you through a lot of rooms in order for him to be weakened and unable to teleport you far away from an exit!
 Be aware each health point matters, since there is a lot to overcome!
 
 
@@ -87,38 +87,39 @@ Items used overall:
 * 1 10k resistor (MAX7219 ISET pin)
 * a bunch of cables and arduino ports (pin ports can be found in [Config.ino](Game/Config.ino))
 
-## Code documentaiton:
+## Code documentation:
 
-The [Game.ino](Game/Game.ino) starts our program logic, and it has a setupRun() which is found in [Config.ino](Game/Config.ino) and then we initialize the game with the intro state. After that we loop the game states with game.gameLoop();
+The [Game.ino](Game/Game.ino) starts our program logic, and it has a setupRun() which is found in [Config.ino](Game/Config.ino) and then we initialize the game with the intro state. After that we loop the game states with game.gameLoop();  
 I will explain the program skeleton, refering mostly to .h files, the implementation of the .h files is in the .ino files.  
 
 ### Program skeleton 
 
-* Game.ino - starts our logic
-* Config.h - holds the file configuration, (global variables and setupRun())
-* Joystick.h - defines our joystick functionality 
-* Matrix.h - manages interaction with the 8x8 matrix
-* Buzzer.h - defines our buzzer actions
-    * Pitches.h - just some macro defines for buzzer song notes
-* GameEngine.h - this is the game engine that swaps through GameStates
-* GameStates.h - this has all our main game states (GameStates inherit from GameState.h which is a abstract class)
-    * IntroState - manages the intro game state
-    * GameState -  manages our gameplay state only (when we press new game)
-        * Entities.h - this has all our entities defined, they inherit Entity abstract class
+* [Game.ino](Game/Game.ino) - starts our logic
+* [Config.h](Game/.Config.h) - holds the file configuration, (global variables and setupRun())
+* [Joystick.h](Game/Joystick.h) - defines our joystick functionality 
+* [Matrix.h](Game/Matrix.h) - manages interaction with the 8x8 matrix
+* [Buzzer.h](Game/Buzzer.h) - defines our buzzer actions
+    * [Pitches.h](Game/Pitches.h) - just some macro defines for buzzer song notes
+* [GameEngine.h](Game/GameEngine.h) - this is the game engine that swaps through GameStates
+* [GameStates.h](Game/GameStates.h) - this has all our main game states (GameStates inherit from GameState.h which is a abstract class)
+    * [IntroState](Game/IntroState.h) - manages the intro game state
+    * [GameState](Game/GameState.h) -  manages our gameplay state only (when we press new game)
+        * [Entities.h](Game/Entities.h) - this has all our entities defined, they inherit Entity abstract class
             * Player - has our player functionality
             * Enemy - has our enemy functionality
-        * Map.h - manages our map engine and everything about map
+        * [Map.h](Game/Map.h) - manages our map engine and everything about map
             * Room - class that has minimal information about a room
             * RenderedRoom - inherits Room, adds rendering functioality for a Room
             * MapEngine - handles all map actions, like generating a new room, moving an entity (has a currentRenderedRoom pointer at all times on which we make modifications)
     * MenuState - manages the menu
     * HighscoresState - manages the highscores
-    * SettingsState - handles the SettingsState menu and has multiple SettingsStates for each setting option (SettingsStates inherit GameState.h as well)
-        * SettingsNameState - change player name state
-        * SettingsDifficultyState - change difficulty state
-        * SettingsContrastState - change contrast of lcd state
-        * SettingsLedBrightnessState - change brightness of lcd state
-        * SettingsMatrixBrightnessState - change matrix brightness state
+    * SettingsState - handles the SettingsState menu and has multiple SettingsStates for each setting option 
+        * [SettingsStates.h](Game/SettingsStates.h) - has all settingsStates (they inherit GameState.h as well)
+            * SettingsNameState - change player name state
+            * SettingsDifficultyState - change difficulty state
+            * SettingsContrastState - change contrast of lcd state
+            * SettingsLedBrightnessState - change brightness of lcd state
+            * SettingsMatrixBrightnessState - change matrix brightness state
     * AboutState - manages the about state
 
 ### Other details
