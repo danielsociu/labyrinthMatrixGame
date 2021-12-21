@@ -145,6 +145,7 @@ void MenuState::onExit()
 
 void MenuState::printMenuLine(byte line)
 {
+    // a switch that uses F macro for the menu string print (writes strings on flash)
     switch(line)
     {
         case menuOptions::newGame:
@@ -166,15 +167,9 @@ void MenuState::printMenuLine(byte line)
 
 // Game State **********************************************
 
-
-//constexpr char GameState::gameoverText[];
 constexpr char GameState::gamefinshedScoreText[];
-//constexpr char GameState::gamewonText[];
 constexpr char GameState::newHighscoreText[];
 constexpr char GameState::newHighscoreSaveText[];
-//constexpr char GameState::newHighscoreOption1[];
-//constexpr char GameState::newHighscoreOption2[];
-//constexpr char GameState::leftText[];
 
 GameState::GameState()
 {
@@ -202,14 +197,9 @@ void GameState::onEntry()
     this->updateDisplay();
 }
 
-void GameState::updateMatrix() 
-{
-    matrix.updateMatrix(mapEngine->getRender());
-}
-
-
 void GameState::onGameFinished()
 {
+    // execute when game finished
     gameFinished = true;
     gameFinishedTime = millis();
     this->calculateScore();
@@ -217,6 +207,8 @@ void GameState::onGameFinished()
 
 void GameState::calculateScore()
 {
+    // calculates the score
+    // time & win score are added when game finished
     roomsScore = player->getRoomsVisited() * roomScoreReward;
     enemyScore = player->getEnemiesKilled() * (enemyKillReward + game.getSettingsState()->getDifficulty() * enemyKillRewardMultiplier);
     timeScore = 0;
@@ -246,6 +238,11 @@ void GameState::gameoverDisplay()
     lcd.print(this->score);
 }
 
+void GameState::gameoverMatrix()
+{
+    matrix.drawX();
+}
+
 void GameState::gamewonDisplay()
 {
     lcd.clear();
@@ -256,11 +253,6 @@ void GameState::gamewonDisplay()
     lcd.print(this->score);
 }
 
-void GameState::gameoverMatrix()
-{
-    matrix.drawX();
-}
-
 void GameState::gamewonMatrix()
 {
     matrix.drawHappyFace();
@@ -268,6 +260,7 @@ void GameState::gamewonMatrix()
 
 void GameState::newHighscoreDisplay()
 {
+    // display when getting a new highscore
     lcd.clear();
     lcd.setCursor(newHighscorePadding, 0);
     lcd.print(newHighscoreText);
@@ -285,6 +278,7 @@ void GameState::newHighscoreDisplay()
 
 void GameState::updateDisplay() 
 { 
+    // update lcd screen during gameplay
     lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print(game.getSettingsState()->getPlayerName());
@@ -327,6 +321,12 @@ void GameState::updateDisplay()
     }
 }
 
+void GameState::updateMatrix() 
+{
+    // update matrix during gameplay
+    matrix.updateMatrix(mapEngine->getRender());
+}
+
 void GameState::updateState() 
 {
     if (!gameFinished)
@@ -337,6 +337,7 @@ void GameState::updateState()
           lastOption = option;
           this->updateDisplay();
         }
+        // if player moved
         if (debouncer(player->getLastMoved(), Player::delayMovement)) 
         {
             moved = false;
@@ -483,6 +484,7 @@ void GameState::updateState()
     } 
     else if (newHighscore) 
     {
+        // new highscore menu
         if (debouncer(newHighscoreTime, newHighscoreTimer))
         {
             if (joystick.isPressed())
@@ -513,10 +515,12 @@ void GameState::updateState()
     }
     else 
     {
+        // game finished
         if (debouncer(gameFinishedTime, gameFinishedTimer) && joystick.isPressed()) 
         {
             if (game.getHighscoresState()->checkNewHighscore(this->score))
             {
+                // initializes new highscore menu
                 newHighscoreInit();
             } 
             else
@@ -624,6 +628,7 @@ void HighscoresState::onExit()
 
 void HighscoresState::readEEPROM(byte position, char* name, int* score)
 {
+    // reads EEPROM function for highscores
     int i, offset, currentScore = 0;
     position *= segmentsSize;
     for (i = position; i < position + firstSegmentSize; i++)
@@ -649,6 +654,7 @@ void HighscoresState::readEEPROM(byte position, char* name, int* score)
 }
 void HighscoresState::writeEEPROM(const char* name, int score)
 {
+    // writes highscores on EEPROM
     byte position = 0;
     int initialScore = score;
     for (byte i = 0; i < numberOfSegments; ++i)
@@ -714,7 +720,7 @@ bool HighscoresState::checkNewHighscore(int score)
 
 SettingsState::SettingsState()
 {
-    // Setting defaults
+    // Settings defaults initialization
     playerName = (char*)malloc(sizeof(char) * stringLength);
     strcpy(playerName, defaultUsername);
     this->difficulty = defaultDifficulty;
@@ -838,6 +844,7 @@ void SettingsState::onExit()
 
 void SettingsState::printMenuLine(byte line)
 {
+    // Settings menu with F macro for ram efficiency
     switch(line)
     {
         case settingsOptions::playerNameOption:

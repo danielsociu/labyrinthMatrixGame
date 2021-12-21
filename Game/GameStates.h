@@ -67,51 +67,64 @@ class MenuState : public State
 class GameState : public State
 {
     public:
+        // score rewards
         static constexpr short roomScoreReward = 5;
         static constexpr short enemyKillReward = 10;
         static constexpr short enemyKillRewardMultiplier = 10;
         static constexpr short timeScoreLimit = 1000;
         static constexpr short winScoreReward = 200;
+
+        // display constants
         static constexpr byte gameoverPadding = 3;
-//        static constexpr char gameoverText[11] = "Game over!";
         static constexpr char gamefinshedScoreText[8] = "Score: ";
         static constexpr byte gamewonPadding = 2;
-//        static constexpr char gamewonText[14] = "You got away!";
         static constexpr byte newHighscorePadding = 0;
         static constexpr char newHighscoreText[13] = "New hi-score";
         static constexpr char newHighscoreSaveText[7] = "Save: ";
-//        static constexpr char newHighscoreOption1[9] = ">yes  no";
-//        static constexpr char newHighscoreOption2[9] = " yes >no";
-//        static constexpr char leftText[7] = "left: ";
         static constexpr short optionsCount = 2;
+
+        // timers
         static constexpr short optionTimer = 1000;
         static constexpr short gameFinishedTimer = 300;
         static constexpr short newHighscoreTimer = 300;
+
     private:
-        bool gameFinished;
-        int score;
-        unsigned long startTime;
+        // game variables
         MapEngine *mapEngine;
         Player* player;
         Enemy* enemy;
+        bool gameFinished;
+        bool escaped;
+        bool newHighscore;
+        short totalEnemiesToKill;
+        short totalRoomsToVisit;
+
+        // used for gameplay display swapping between information displayed
+        byte option;
+        byte lastOption;
+
+        // score variables
+        int score;
+        short roomsScore;
+        short enemyScore;
+        short timeScore;
+        short winScore;
+
+        // new highscore option
+        short highscoreLine;
+
+        // timers
+        unsigned long startTime;
+        unsigned long gameFinishedTime;
+        unsigned long newHighscoreTime;
+
+        // player moving variables
         bool moved;
         bool crossedX;
         bool crossedY;
         byte initialX;
         byte initialY;
-        bool escaped;
-        bool newHighscore;
-        short highscoreLine;
-        short totalEnemiesToKill;
-        byte option;
-        byte lastOption;
-        short totalRoomsToVisit;
-        unsigned long gameFinishedTime;
-        unsigned long newHighscoreTime;
-        short roomsScore;
-        short enemyScore;
-        short timeScore;
-        short winScore;
+
 
     public:
         GameState();

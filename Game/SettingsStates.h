@@ -54,11 +54,13 @@ class SettingsContrastState : public State
         const byte titleLength = 10;
 //        static constexpr char title[] = "Contrast:";
     private:
+        static const short maxContrastValue = 100;
+        static const byte maxProgressBar = 16;
         unsigned long startTime;
         const short finishDelay = 300;
 
-        const byte maxProgressBar = 16;
-        const short maxContrastValue = 100;
+        
+        
 
         short currentContrastLevel;
         byte progressBar;
@@ -81,8 +83,8 @@ class SettingsLedBrightnessState : public State
         unsigned long startTime;
         const short finishDelay = 300;
 
-        const byte maxProgressBar = 16;
-        const short maxLedBrightnessValue = 255;
+        static const byte maxProgressBar = 16;
+        static const short maxLedBrightnessValue = 255;
 
         short currentLedBrightnessLevel;
         byte progressBar;
@@ -106,8 +108,8 @@ class SettingsMatrixBrightnessState : public State
         const short finishDelay = 300;
 
 
-        const byte maxProgressBar = 16;
-        const short maxMatrixBrightnessLevel = 15;
+        static const byte maxProgressBar = 16;
+        static const short maxMatrixBrightnessLevel = 15;
 
         short currentMatrixBrightnessLevel;
         byte progressBar;

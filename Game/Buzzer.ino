@@ -30,6 +30,7 @@ void Buzzer::noBuzzerTone()
 
 void Buzzer::startThemeSong()
 {
+    // Plays the theme song, with a debouncer & song timers
     duration = 1000 / themeSongDurations[currentNote];
     if (debouncer(lastTonePlayed, duration * 1.3))
     {

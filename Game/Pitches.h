@@ -1,5 +1,5 @@
 /*************************************************
- * Public Constants
+ * Public Constants - for buzzer song
  *************************************************/
 
 #define NOTE_B0  31

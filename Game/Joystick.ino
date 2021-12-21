@@ -35,6 +35,7 @@ void Joystick::readValues()
 
 void Joystick::onceMovedChecker()
 {
+    // this has to run while we use onceMove*direction* functions so we can reset moved
     if (moved && abs(xValue - defaultValue) < moveThreshold && abs(yValue - defaultValue) < moveThreshold)
     {
         moved = false;

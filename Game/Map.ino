@@ -105,8 +105,8 @@ void RenderedRoom :: renderRoom()
 {
     byte upDown[2] = {upRoad(), downRoad()};
     byte leftRight[2] = {leftRoad(), rightRoad()};
-    for (byte i = 0; i < 2; ++i)
-    { // represents first row/last row
+    for (byte i = 0; i < 2; ++i) // i represents first row/last row
+    { 
         if (upDown[i] == 1)
         {
             renderedRoom[i * 6]      = B11001111;
@@ -124,8 +124,8 @@ void RenderedRoom :: renderRoom()
             renderedRoom[i * 6 + 1]  = B11111111;
         }
     }
-    for (byte i = 1; i < 3; ++i)
-    {  // represents if there is an exit on side 1 or 2
+    for (byte i = 1; i < 3; ++i) // represents if there is an exit on side 1 or 2
+    {
         if (leftRight[0] == i && leftRight[1] == i)
         {
             renderedRoom[i * 2]      = B00000000;
@@ -147,9 +147,9 @@ void RenderedRoom :: renderRoom()
             renderedRoom[i * 2 + 1]  = B11000011;
         }
     }
-    // TODO: Add exit
     if (this->hasExit)
     {
+        // adds the exit to the rendered room
         byte curExitRoad = this->getExitRoad();
         switch(exitDirection)
         {
@@ -195,6 +195,7 @@ RenderedRoom* MapEngine::getRender()
 
 bool RenderedRoom::isOnExit(byte x, byte y)
 {
+    // checks if the position overlaps with the exit
     if (hasExit == false)
     {
         return false;
@@ -231,6 +232,7 @@ byte MapEngine::generateRandomRoad()
 
 void MapEngine::generateNewRandomRoom(byte direction, bool exitSpawnable = false)
 {
+    // generates a new room when the player comes from a specific direction
     byte difficulty = game.getSettingsState()->getDifficulty();
     byte value = currentRenderedRoom->getRoad(direction);
     bool hasEnemy = false;
@@ -304,6 +306,7 @@ void MapEngine::drawEntity(Entity* entity)
 
 void MapEngine::drawAttack(Entity* entity)
 {
+    // renders attack of the entity
     byte attackRange = entity->getAttackRange();
     byte x = entity->getX();
     byte y = entity->getY();
@@ -319,11 +322,6 @@ void MapEngine::drawAttack(Entity* entity)
         }
     }
 }
-
-// byte MapEngine::getRoad(Entity* entity)
-// {
-//   return this->getRender()->getRoad(entity->getX(), entity->getY());
-// }
 
 bool MapEngine::checkInRangeOfAttack(Entity* attacker, Entity* checked)
 {
